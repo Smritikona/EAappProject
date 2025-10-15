@@ -1,10 +1,5 @@
 ﻿using EAappProject.Model;
-using NUnit.Framework.Internal.Execution;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace EAappProject.Utilities
 {
@@ -14,11 +9,11 @@ namespace EAappProject.Utilities
 
         public static ProductDetails ReadJsonFile()
         {
-
             var jsonFilePath = Path.Combine(AppContext.BaseDirectory, "Data", "ProductDetails.json");
-        
-            
-        
+            var jsonbody = File.ReadAllText(jsonFilePath);
+            var productDetail = JsonConvert.DeserializeObject<ProductDetails>(jsonbody);
+            return productDetail;
+
         }
 
     }
