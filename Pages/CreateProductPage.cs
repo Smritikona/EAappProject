@@ -1,4 +1,5 @@
 ﻿using EAappProject.Controls;
+using EAappProject.Model;
 using Microsoft.Playwright;
 
 namespace EAappProject.Pages
@@ -17,12 +18,12 @@ namespace EAappProject.Pages
             await pageTitleTxt.IsVisibleAsync();
             return this;
         }
-        public async Task<ProductListPage> CreateProductAsync(string name, string description, string price, string productType)
+        public async Task<ProductListPage> CreateProductAsync(ProductDetails product)
         {
-            await txtName.ClearAndFillElementAsync(name);
-            await txtDescription.ClearAndFillElementAsync(description);
-            await txtPrice.ClearAndFillElementAsync(price);
-            await txtProductType.SelectDropDownWithTextAsync(productType);
+            await txtName.ClearAndFillElementAsync(product.Name);
+            await txtDescription.ClearAndFillElementAsync(product.Description);
+            await txtPrice.ClearAndFillElementAsync(product.Price);
+            await txtProductType.SelectDropDownWithTextAsync(product.ProductType);
             await btnCreate.ClickAsync();
             return new ProductListPage(page);
         }
