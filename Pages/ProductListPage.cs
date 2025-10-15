@@ -20,21 +20,23 @@ public class ProductListPage(IPage page)
         return new CreateProductPage(page);
     }
 
+    public ILocator GetProductRow(string name, string description, string price, string productType)
+    {
+        return page.GetByRole(AriaRole.Row, new() { Name = name })
+            .Filter(new() { HasText = description })
+            .Filter(new() { HasText = price })
+            .Filter(new() { HasText = productType });
+    }
+
     public async Task<bool> IsProductExistAsync(string name, string description, string price, string productType)
     {
-        var productRow = page.GetByRole(AriaRole.Row, new() { Name = name })
-            .Filter(new() { HasText = description})
-            .Filter(new() { HasText = price})
-            .Filter(new() { HasText = productType});
+        var productRow = GetProductRow(name, description, price, productType);
 
         return await productRow.IsVisibleAsync();
     }
     public async Task<DeletePage> DeleteProductAsync(string name, string description, string price, string productType)
     {
-        var productRow = page.GetByRole(AriaRole.Row, new() { Name = name })
-            .Filter(new() { HasText = description })
-            .Filter(new() { HasText = price })
-            .Filter(new() { HasText = productType });
+        var productRow = GetProductRow(name, description, price, productType);
 
         await btnDelete(productRow).ClickAsync();
         return new DeletePage(page);

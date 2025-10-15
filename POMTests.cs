@@ -20,7 +20,7 @@ namespace EAappProject
             //Browser Launch Settings
             var browserSettings = new BrowserTypeLaunchOptions
             {
-                Headless = false,
+                Headless = false
             };
 
             //Browser
@@ -40,6 +40,7 @@ namespace EAappProject
         [Test]
         public async Task CreateNewEmployeeWithPageNavigationAsync()
         {
+
             var data = JsonHelper.ReadJsonFile();
 
             HomePage homePage = new HomePage(_page);
@@ -51,15 +52,10 @@ namespace EAappProject
             var createProduct = await productList.CreateProductAsync();
             await createProduct.ValidateTitleAsync();
 
-
-            await createProduct.CreateProductAsync(data.Name,data.Description,data.Price,data.ProductType);
-
+            await createProduct.CreateProductAsync(data);
             await productList.IsProductExistAsync(data.Name, data.Description, data.Price, data.ProductType);
-
             var deleteProduct = await productList.DeleteProductAsync(data.Name, data.Description, data.Price, data.ProductType);
-
             await deleteProduct.ValidateTitleAsync();
-
             await deleteProduct.DeleteProductPage();
 
         }
