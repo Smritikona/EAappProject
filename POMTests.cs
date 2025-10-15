@@ -1,4 +1,5 @@
 using EAappProject.Pages;
+using EAappProject.Utilities;
 using Microsoft.Playwright;
 
 namespace EAappProject
@@ -39,6 +40,9 @@ namespace EAappProject
         [Test]
         public async Task CreateNewEmployeeWithPageNavigationAsync()
         {
+
+            var data = JsonHelper.ReadJsonFile();
+
             HomePage homePage = new HomePage(_page);
             await homePage.ValidateTitleAsync();
 
@@ -48,9 +52,9 @@ namespace EAappProject
             var createProduct = await productList.CreateProductAsync();
             await createProduct.ValidateTitleAsync();
 
-            await createProduct.CreateProductAsync("Gaming Mouse", "RGB feature", "200", "PERIPHARALS");
-            await productList.IsProductExistAsync("Gaming Mouse", "RGB feature", "200", "PERIPHARALS");
-            var deleteProduct = await productList.DeleteProductAsync("Gaming Mouse", "RGB feature", "200", "PERIPHARALS");
+            await createProduct.CreateProductAsync(data);
+            await productList.IsProductExistAsync(data.Name, data.Description, data.Price, data.ProductType);
+            var deleteProduct = await productList.DeleteProductAsync(data.Name, data.Description, data.Price, data.ProductType);
             await deleteProduct.ValidateTitleAsync();
             await deleteProduct.DeleteProductPage();
         }
