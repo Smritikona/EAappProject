@@ -53,12 +53,43 @@ namespace EAappProject
             await createProduct.ValidateTitleAsync();
 
             await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data.Name, data.Description, data.Price, data.ProductType);
-            var deleteProduct = await productList.DeleteProductAsync(data.Name, data.Description, data.Price, data.ProductType);
+            await productList.IsProductExistAsync(data);
+            var deleteProduct = await productList.DeleteProductAsync(data);
             await deleteProduct.ValidateTitleAsync();
             await deleteProduct.DeleteProductPage();
         }
 
+        [Test]
+        public async Task CreateNewEmployeeAndEditAsync()
+        {
+
+            var data = JsonHelper.ReadJsonFile();
+
+            HomePage homePage = new HomePage(_page);
+            await homePage.ValidateTitleAsync();
+
+            var productList = await homePage.ClickProductListAsync();
+            await productList.ValidateTitleAsync();
+
+            var createProduct = await productList.CreateProductAsync();
+            await createProduct.ValidateTitleAsync();
+
+            await createProduct.CreateProductAsync(data);
+            await productList.IsProductExistAsync(data);
+
+            // Edit Product
+            var EditProductPage = await productList.ClickEditLinkAsync(data);
+            data.Name = "Updated Name";
+            data.Description = "Updated Description";
+            data.Price = "999";
+            data.ProductType = "Updated ProductType";
+            await EditProductPage.EditProductAsync(data);
+            await productList.IsProductExistAsync(data);
+
+            var deleteProduct = await productList.DeleteProductAsync(data);
+            await deleteProduct.ValidateTitleAsync();
+            await deleteProduct.DeleteProductPage();
+        }
 
 
         [TearDown]
