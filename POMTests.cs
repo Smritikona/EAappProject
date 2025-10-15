@@ -19,7 +19,7 @@ namespace EAappProject
             //Browser Launch Settings
             var browserSettings = new BrowserTypeLaunchOptions
             {
-                Headless = false,
+                Headless = false
             };
 
             //Browser
@@ -45,25 +45,14 @@ namespace EAappProject
             var productList = await homePage.ClickProductListAsync();
             await productList.ValidateTitleAsync();
 
-            //var createProduct = await productList.CreateProductAsync();
-            //await createProduct.ValidateTitleAsync();
+            var createProduct = await productList.CreateProductAsync();
+            await createProduct.ValidateTitleAsync();
 
-            //await createProduct.CreateProductAsync("Gaming Mouse","RGB feature","200", "PERIPHARALS");
-
+            await createProduct.CreateProductAsync("Gaming Mouse", "RGB feature", "200", "PERIPHARALS");
             await productList.IsProductExistAsync("Gaming Mouse", "RGB feature", "200", "PERIPHARALS");
-
-            await _page.WaitForTimeoutAsync(3000);
-
             var deleteProduct = await productList.DeleteProductAsync("Gaming Mouse", "RGB feature", "200", "PERIPHARALS");
-
-            await _page.WaitForTimeoutAsync(3000);
-
             await deleteProduct.ValidateTitleAsync();
-
             await deleteProduct.DeleteProductPage();
-
-            await _page.WaitForTimeoutAsync(3000);
-
         }
 
 
