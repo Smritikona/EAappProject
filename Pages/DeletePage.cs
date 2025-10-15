@@ -13,7 +13,7 @@ public class DeletePage(IPage page)
         return new DeletePage(page);
     }
 
-    public async Task<ProductListPage> DeleteProductPage()
+    public async Task<ProductListPage> DeleteAsync()
     {
         await btnDelete.ClickAsync();
         return new ProductListPage(page);
