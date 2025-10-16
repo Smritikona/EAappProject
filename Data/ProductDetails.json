@@ -1,6 +1,7 @@
 {
-  "Name": "Gaming Laptop",
-  "Price": 1499,
-  "Description": "A high-performance laptop designed for gaming enthusiasts.",
-  "ProductType": "EXTERNAL"
+  "Name": "Wireless HeadSet",
+  "Description": "A high-precision wireless headset with ergonomic design.",
+  "Price": 2967,
+  "ProductType": "EXTERNAL",
+  "NewPrice": 3000
 }
