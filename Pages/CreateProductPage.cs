@@ -6,18 +6,13 @@ namespace EAappProject.Pages
 {
     public class CreateProductPage(IPage page)
     {
-        ILocator pageTitleTxt => page.GetByRole(AriaRole.Heading, new() { Name = "Create" });
-        ILocator txtName => page.GetByRole(AriaRole.Textbox, new() { Name = "Name" });
-        ILocator txtDescription => page.GetByRole(AriaRole.Textbox, new() { Name = "Description" });
-        ILocator txtPrice => page.Locator("#Price");
-        ILocator txtProductType => page.GetByLabel("ProductType");
-        ILocator btnCreate => page.GetByRole(AriaRole.Button, new() { Name = "Create" });
+        public ILocator pageTitleTxt => page.GetByRole(AriaRole.Heading, new() { Name = "Create" });
+        public ILocator txtName => page.GetByRole(AriaRole.Textbox, new() { Name = "Name" });
+        public ILocator txtDescription => page.GetByRole(AriaRole.Textbox, new() { Name = "Description" });
+        public ILocator txtPrice => page.Locator("#Price");
+        public ILocator txtProductType => page.GetByLabel("ProductType");
+        public ILocator btnCreate => page.GetByRole(AriaRole.Button, new() { Name = "Create" });
 
-        public async Task<CreateProductPage> ValidateTitleAsync()
-        {
-            await pageTitleTxt.IsVisibleAsync();
-            return this;
-        }
         public async Task<ProductListPage> CreateProductAsync(ProductDetails productDetails)
         {
             await txtName.ClearAndFillElementAsync(productDetails.Name);

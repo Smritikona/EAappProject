@@ -1,6 +1,8 @@
+using EAappProject.Model;
 using EAappProject.Pages;
 using EAappProject.Utilities;
 using Microsoft.Playwright;
+using NUnit;
 
 namespace EAappProject
 {
@@ -12,6 +14,7 @@ namespace EAappProject
         [SetUp]
         public async Task SetupPlaywright()
         {
+            Console.WriteLine("Starting SetupPlaywright...");
             //Playwright 
             var playwright = await Playwright.CreateAsync();
 
@@ -31,6 +34,7 @@ namespace EAappProject
 
             //URL
             await _page.GotoAsync("http://localhost:8000/");
+            Console.WriteLine("SetupPlaywright completed.");
 
         }
 
@@ -47,7 +51,7 @@ namespace EAappProject
             await productList.ValidateTitleAsync();
 
             var createProduct = await productList.CreateProductAsync();
-            await createProduct.ValidateTitleAsync();
+            await createProduct.pageTitleTxt.IsVisibleAsync();
             await createProduct.CreateProductAsync(data);
             await productList.IsProductExistAsync(data);
 
@@ -69,20 +73,31 @@ namespace EAappProject
             await productList.ValidateTitleAsync();
 
             var createProduct = await productList.CreateProductAsync();
-            await createProduct.ValidateTitleAsync();
+            await createProduct.pageTitleTxt.IsVisibleAsync();
+
             await createProduct.CreateProductAsync(data);
             await productList.IsProductExistAsync(data);
 
+            
             var editProduct = await productList.EditProductAsync(data);
-            await editProduct.ValidateTitleAsync();
-            await editProduct.ValidateProductDetailsAsync(data);
-            await editProduct.UpdateAsync(data);
-            await productList.isModifiedProductExistAsync(data);
 
-            var deleteProduct = await productList.DeleteModifiedProductAsync(data);
+            await Assertions.Expect(editProduct.pageTitleTxt).ToBeVisibleAsync();
+
+            await Assertions.Expect(editProduct.txtName).ToHaveValueAsync(data.Name);
+            await Assertions.Expect(editProduct.txtDescription).ToHaveValueAsync(data.Description);
+            await Assertions.Expect(editProduct.txtPrice).ToHaveValueAsync(data.Price);
+            await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType);
+
+            data.Price = "3000";
+            data.Description = "This is a modified description";
+
+            await editProduct.UpdateAsync(data);
+            await productList.IsProductExistAsync(data);
+
+            var deleteProduct = await productList.DeleteProductAsync(data);
             await deleteProduct.ValidateTitleAsync();
             await deleteProduct.DeleteAsync();
-            await productList.ValidateModifiedProductNotExistAsync(data);
+            await productList.ValidateProductNotExistAsync(data);
         }
 
         [Test]
@@ -97,13 +112,19 @@ namespace EAappProject
             await productList.ValidateTitleAsync();
 
             var createProduct = await productList.CreateProductAsync();
-            await createProduct.ValidateTitleAsync();
+            await createProduct.pageTitleTxt.IsVisibleAsync();
+
             await createProduct.CreateProductAsync(data);
             await productList.IsProductExistAsync(data);
 
             var detailsProduct = await productList.DetailsProductAsync(data);
-            await detailsProduct.ValidateTitleAsync();
-            await detailsProduct.ValidateProductDetailsPage(data);
+            await Assertions.Expect(detailsProduct.pageTitleTxt).ToBeVisibleAsync();
+
+            await Assertions.Expect(detailsProduct.txtName).ToHaveTextAsync(data.Name);
+            await Assertions.Expect(detailsProduct.txtPrice).ToHaveTextAsync(data.Price);
+            await Assertions.Expect(detailsProduct.txtDescription).ToHaveTextAsync(data.Description);
+            await Assertions.Expect(detailsProduct.txtProductType).ToHaveTextAsync(data.ProductType);
+
             await detailsProduct.BackToListAsync();
 
             var deleteProduct = await productList.DeleteProductAsync(data);
@@ -124,28 +145,41 @@ namespace EAappProject
             await productList.ValidateTitleAsync();
 
             var createProduct = await productList.CreateProductAsync();
-            await createProduct.ValidateTitleAsync();
+            await createProduct.pageTitleTxt.IsVisibleAsync();
+
             await createProduct.CreateProductAsync(data);
             await productList.IsProductExistAsync(data);
 
             var detailsProduct = await productList.DetailsProductAsync(data);
-            await detailsProduct.ValidateTitleAsync();
-            await detailsProduct.ValidateProductDetailsPage(data);
+            await Assertions.Expect(detailsProduct.pageTitleTxt).ToBeVisibleAsync();
+
+            await Assertions.Expect(detailsProduct.txtName).ToHaveTextAsync(data.Name);
+            await Assertions.Expect(detailsProduct.txtPrice).ToHaveTextAsync(data.Price);
+            await Assertions.Expect(detailsProduct.txtDescription).ToHaveTextAsync(data.Description);
+            await Assertions.Expect(detailsProduct.txtProductType).ToHaveTextAsync(data.ProductType);
 
             var editProduct = await detailsProduct.GoToEditPageAsync();
-            await editProduct.ValidateTitleAsync();
-            await editProduct.ValidateProductDetailsAsync(data);
-            await editProduct.UpdateAsync(data);
-            await productList.isModifiedProductExistAsync(data);
+            await Assertions.Expect(editProduct.pageTitleTxt).ToBeVisibleAsync();
 
-            var deleteProduct = await productList.DeleteModifiedProductAsync(data);
+            await Assertions.Expect(editProduct.txtName).ToHaveValueAsync(data.Name);
+            await Assertions.Expect(editProduct.txtDescription).ToHaveValueAsync(data.Description);
+            await Assertions.Expect(editProduct.txtPrice).ToHaveValueAsync(data.Price);
+            await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType);
+
+            await editProduct.UpdateAsync(data);
+            await productList.IsProductExistAsync(data);
+
+            var deleteProduct = await productList.DeleteProductAsync(data);
             await deleteProduct.ValidateTitleAsync();
             await deleteProduct.DeleteAsync();
-            await productList.ValidateModifiedProductNotExistAsync(data);
+            await productList.ValidateProductNotExistAsync(data);
         }
 
         [TearDown]
-        public async Task ClosePlaywright() => await _page.CloseAsync();
-
+        public async Task ClosePlaywright()
+        {
+            Console.WriteLine("Closing Playwright...");
+            await _page.CloseAsync();
+        }
     }
 }

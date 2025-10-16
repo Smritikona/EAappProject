@@ -47,11 +47,7 @@ public class ProductListPage(IPage page)
         return new EditPage(page);
     }
 
-    public async Task<bool> isModifiedProductExistAsync(ProductDetails productDetails)
-    {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.NewPrice, productDetails.ProductType);
-        return await productRow.IsVisibleAsync();
-    }
+ 
     public async Task<DeletePage> DeleteProductAsync(ProductDetails productDetails)
     {
         var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price, productDetails.ProductType);
@@ -60,25 +56,10 @@ public class ProductListPage(IPage page)
         return new DeletePage(page);
     }
 
+
     public async Task<ProductListPage> ValidateProductNotExistAsync(ProductDetails productDetails)
     {
         var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price, productDetails.ProductType);
-        await Assertions.Expect(productRow).Not.ToBeVisibleAsync();
-
-        return new ProductListPage(page);
-    }
-
-    public async Task<DeletePage> DeleteModifiedProductAsync(ProductDetails productDetails)
-    {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.NewPrice, productDetails.ProductType);
-
-        await btnDelete(productRow).ClickAsync();
-        return new DeletePage(page);
-    }
-
-    public async Task<ProductListPage> ValidateModifiedProductNotExistAsync(ProductDetails productDetails)
-    {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.NewPrice, productDetails.ProductType);
         await Assertions.Expect(productRow).Not.ToBeVisibleAsync();
 
         return new ProductListPage(page);
