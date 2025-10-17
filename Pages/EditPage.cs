@@ -24,7 +24,7 @@ public class EditPage(IPage page)
     {
         await Assertions.Expect(txtName).ToHaveValueAsync(productDetails.Name);
         await Assertions.Expect(txtDescription).ToHaveValueAsync(productDetails.Description);
-        await Assertions.Expect(txtPrice).ToHaveValueAsync(productDetails.Price);
+        await Assertions.Expect(txtPrice).ToHaveValueAsync(productDetails.Price.ToString());
         await Assertions.Expect(txtProductType).ToHaveValueAsync(productDetails.ProductType);
 
         return new EditPage(page);

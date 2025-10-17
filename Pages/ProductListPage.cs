@@ -34,14 +34,14 @@ public class ProductListPage(IPage page)
 
     public async Task<bool> IsProductExistAsync(ProductDetails productDetails)
     {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price, productDetails.ProductType);
+        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price.ToString(), productDetails.ProductType);
 
         return await productRow.IsVisibleAsync();
     }
   
     public async Task<EditPage> EditProductAsync(ProductDetails productDetails)
     {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price, productDetails.ProductType);
+        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price.ToString(), productDetails.ProductType);
 
         await btnEdit(productRow).ClickAsync();
         return new EditPage(page);
@@ -52,9 +52,10 @@ public class ProductListPage(IPage page)
         var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.NewPrice, productDetails.ProductType);
         return await productRow.IsVisibleAsync();
     }
+
     public async Task<DeletePage> DeleteProductAsync(ProductDetails productDetails)
     {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price, productDetails.ProductType);
+        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price.ToString(), "CPU");
 
         await btnDelete(productRow).ClickAsync();
         return new DeletePage(page);
@@ -62,7 +63,7 @@ public class ProductListPage(IPage page)
 
     public async Task<ProductListPage> ValidateProductNotExistAsync(ProductDetails productDetails)
     {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price, productDetails.ProductType);
+        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price.ToString(), productDetails.ProductType);
         await Assertions.Expect(productRow).Not.ToBeVisibleAsync();
 
         return new ProductListPage(page);
@@ -86,7 +87,7 @@ public class ProductListPage(IPage page)
 
     public async Task<DetailsPage> DetailsProductAsync(ProductDetails productDetails)
     {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price, productDetails.ProductType);
+        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price.ToString(), productDetails.ProductType);
 
         await btnDetails(productRow).ClickAsync();
         return new DetailsPage(page);
