@@ -9,36 +9,6 @@ namespace EAappProject
     public class POMTests
     {
 
-        private IPage _page;
-
-        [SetUp]
-        public async Task SetupPlaywright()
-        {
-            Console.WriteLine("Starting SetupPlaywright...");
-            //Playwright 
-            var playwright = await Playwright.CreateAsync();
-
-            //Browser Launch Settings
-            var browserSettings = new BrowserTypeLaunchOptions
-            {
-                Headless = false,
-                //SlowMo = 1000
-            };
-
-            //Browser
-            var browser = await playwright.Chromium.LaunchAsync(browserSettings);
-
-            //Page
-            var context = await browser.NewContextAsync();
-            _page = await context.NewPageAsync();
-
-            //URL
-            await _page.GotoAsync("http://localhost:8000/");
-            Console.WriteLine("SetupPlaywright completed.");
-
-        }
-
-
         [Test]
         public async Task CreateDeleteProductAsync()
         {
@@ -85,10 +55,10 @@ namespace EAappProject
 
             await Assertions.Expect(editProduct.txtName).ToHaveValueAsync(data.Name);
             await Assertions.Expect(editProduct.txtDescription).ToHaveValueAsync(data.Description);
-            await Assertions.Expect(editProduct.txtPrice).ToHaveValueAsync(data.Price);
+            await Assertions.Expect(editProduct.txtPrice).ToHaveValueAsync(data.Price.ToString());
             await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType);
 
-            data.Price = "3000";
+            data.Price = 3000;
             data.Description = "This is a modified description";
 
             await editProduct.UpdateAsync(data);
@@ -121,7 +91,7 @@ namespace EAappProject
             await Assertions.Expect(detailsProduct.pageTitleTxt).ToBeVisibleAsync();
 
             await Assertions.Expect(detailsProduct.txtName).ToHaveTextAsync(data.Name);
-            await Assertions.Expect(detailsProduct.txtPrice).ToHaveTextAsync(data.Price);
+            await Assertions.Expect(detailsProduct.txtPrice).ToHaveTextAsync(data.Price.ToString());
             await Assertions.Expect(detailsProduct.txtDescription).ToHaveTextAsync(data.Description);
             await Assertions.Expect(detailsProduct.txtProductType).ToHaveTextAsync(data.ProductType);
 
@@ -154,7 +124,7 @@ namespace EAappProject
             await Assertions.Expect(detailsProduct.pageTitleTxt).ToBeVisibleAsync();
 
             await Assertions.Expect(detailsProduct.txtName).ToHaveTextAsync(data.Name);
-            await Assertions.Expect(detailsProduct.txtPrice).ToHaveTextAsync(data.Price);
+            await Assertions.Expect(detailsProduct.txtPrice).ToHaveTextAsync(data.Price.ToString());
             await Assertions.Expect(detailsProduct.txtDescription).ToHaveTextAsync(data.Description);
             await Assertions.Expect(detailsProduct.txtProductType).ToHaveTextAsync(data.ProductType);
 
@@ -163,7 +133,7 @@ namespace EAappProject
 
             await Assertions.Expect(editProduct.txtName).ToHaveValueAsync(data.Name);
             await Assertions.Expect(editProduct.txtDescription).ToHaveValueAsync(data.Description);
-            await Assertions.Expect(editProduct.txtPrice).ToHaveValueAsync(data.Price);
+            await Assertions.Expect(editProduct.txtPrice).ToHaveValueAsync(data.Price.ToString());
             await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType);
 
             await editProduct.UpdateAsync(data);
@@ -173,13 +143,6 @@ namespace EAappProject
             await deleteProduct.ValidateTitleAsync();
             await deleteProduct.DeleteAsync();
             await productList.ValidateProductNotExistAsync(data);
-        }
-
-        [TearDown]
-        public async Task ClosePlaywright()
-        {
-            Console.WriteLine("Closing Playwright...");
-            await _page.CloseAsync();
         }
     }
 }
