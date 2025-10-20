@@ -1,13 +1,24 @@
+using EAappProject.Driver;
 using EAappProject.Model;
 using EAappProject.Pages;
 using EAappProject.Utilities;
 using Microsoft.Playwright;
-using NUnit;
+using Xunit;
 
 namespace EAappProject
 {
-    public class POMTests
+    public class POMTests : IClassFixture<PlaywrightDriver>
     {
+        private IPage _page;
+        private IPlaywright _playwright;
+        private IBrowser _browser;
+        private IBrowserContext _context;
+        private readonly PlaywrightDriver _playwrightDriver;
+
+        public POMTests(PlaywrightDriver playwrightDriver)
+        {
+          _playwrightDriver = playwrightDriver;
+        }
 
         [Test]
         public async Task CreateDeleteProductAsync()

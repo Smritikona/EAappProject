@@ -20,8 +20,6 @@ namespace EAappProject
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly PlaywrightDriver _playwrightDriver;
 
-        public string Name { get; private set; }
-
         public DataDrivenTestingXUnit(ITestOutputHelper testOutputHelper, PlaywrightDriver playwrightDriver)
         {
             _testOutputHelper = testOutputHelper;
