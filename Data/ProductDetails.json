@@ -1,6 +1,6 @@
 {
   "Name": "Wireless HeadSet",
   "Description": "A high-precision wireless headset with ergonomic design.",
-  "Price": "2967",
-  "ProductType": "EXTERNAL"
+  "Price": 2967,
+  "ProductType": "MONITOR"
 }

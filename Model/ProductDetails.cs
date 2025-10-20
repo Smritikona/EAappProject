@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static NUnit.Framework.Internal.OSPlatform;
 
 namespace EAappProject.Model
 {
@@ -11,9 +12,15 @@ namespace EAappProject.Model
         public string Name { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
-        public string ProductType { get; set; }
+        public ProductTypeEnum ProductType { get; set; }
         public string UpdatedName { get; set; }
 
-       
+        public enum ProductTypeEnum
+        {
+            CPU,
+            MONITOR,
+            EXTERNAL,
+            PERIPHARALS
+        }
     }
 }

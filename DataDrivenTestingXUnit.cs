@@ -7,6 +7,7 @@ using EAappProject.Utilities;
 using Microsoft.Playwright;
 using Xunit;
 using Xunit.Abstractions;
+using static EAappProject.Model.ProductDetails;
 
 namespace EAappProject
 {
@@ -14,16 +15,16 @@ namespace EAappProject
     {
 
         private IPage _page;
-        private IPlaywright _playwright;
-        private IBrowser _browser;
-        private IBrowserContext _context;
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly PlaywrightDriver _playwrightDriver;
+        private readonly Random _random = new Random();
+
 
         public DataDrivenTestingXUnit(ITestOutputHelper testOutputHelper, PlaywrightDriver playwrightDriver)
         {
             _testOutputHelper = testOutputHelper;
             _playwrightDriver = playwrightDriver;
+            _page = _playwrightDriver.InitializeAsync().GetAwaiter().GetResult();
         }
 
         [Xunit.Theory]
@@ -50,7 +51,7 @@ namespace EAappProject
                 Name = productName,
                 Description = description,
                 Price = price,
-                ProductType = productType,
+                ProductType = Enum.Parse<ProductTypeEnum>(productType)
             };
             
             await createProduct.CreateProductAsync(data);
@@ -70,7 +71,6 @@ namespace EAappProject
             _testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
 
         }
-
 
         [Xunit.Theory]
         [MemberData(nameof(GetProductData))]
@@ -109,12 +109,12 @@ namespace EAappProject
         [Xunit.Fact]
         public async Task CreateDeleteProductWithFixtureAsync()
         {
-
             var fixture = new Fixture();
             var data = fixture.Create<ProductDetails>();
 
-            //Output to console before test
-            //_testOutputHelper.WriteLine($"Before test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
+            var values = Enum.GetValues(typeof(ProductTypeEnum));
+            var randomProductType = (ProductTypeEnum)values.GetValue(_random.Next(values.Length));
+            data.ProductType = randomProductType;
 
             HomePage homePage = new HomePage(_page);
             await homePage.ValidateTitleAsync();
@@ -124,22 +124,25 @@ namespace EAappProject
 
             var createProduct = await productList.CreateProductAsync();
             await createProduct.pageTitleTxt.IsVisibleAsync();
-
+            
             await createProduct.CreateProductAsync(data);
             await productList.IsProductExistAsync(data);
 
-            //var editProduct = await productList.EditProductAsync(data);
+            //Output to console before test
+            _testOutputHelper.WriteLine($"Before test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
 
-            //data.Name = data.UpdatedName ?? data.Name;
-            //await editProduct.UpdateAsync(data);
+            var editProduct = await productList.EditProductAsync(data);
+
+            data.Name = data.UpdatedName ?? data.Name;
+            await editProduct.UpdateAsync(data);
 
             var deleteProduct = await productList.DeleteProductAsync(data);
             await deleteProduct.ValidateTitleAsync();
             await deleteProduct.DeleteAsync();
             await productList.ValidateProductNotExistAsync(data);
 
-            //Output to console after test
-            //_testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
+            //Output to console after edit
+            _testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
 
         }
 
@@ -147,10 +150,9 @@ namespace EAappProject
         [AutoData]
         public async Task CreateDeleteProductWithAutoFixtureAsync(ProductDetails data)
         {
-
-          
-            //Output to console before test
-            //_testOutputHelper.WriteLine($"Before test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
+            var values = Enum.GetValues(typeof(ProductTypeEnum));
+            var randomProductType = (ProductTypeEnum)values.GetValue(_random.Next(values.Length));
+            data.ProductType = randomProductType;
 
             HomePage homePage = new HomePage(_page);
             await homePage.ValidateTitleAsync();
@@ -164,29 +166,31 @@ namespace EAappProject
             await createProduct.CreateProductAsync(data);
             await productList.IsProductExistAsync(data);
 
-            //var editProduct = await productList.EditProductAsync(data);
+            //Output to console before edit
+            _testOutputHelper.WriteLine($"Before test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
 
-            //data.Name = data.UpdatedName ?? data.Name;
-            //await editProduct.UpdateAsync(data);
+            var editProduct = await productList.EditProductAsync(data);
+
+            data.Name = data.UpdatedName ?? data.Name;
+            data.Price += 10; 
+            await editProduct.UpdateAsync(data);
 
             var deleteProduct = await productList.DeleteProductAsync(data);
             await deleteProduct.ValidateTitleAsync();
             await deleteProduct.DeleteAsync();
             await productList.ValidateProductNotExistAsync(data);
 
-            //Output to console after test
-            //_testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
+            //Output to console after edit
+            _testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
 
         }
         public static IEnumerable<object[]> GetProductData()
         {
-            yield return new object[] { new ProductDetails { Name = "TestProduct1", Description = "This is Member Product1", Price = 15, ProductType = "CPU" } };
-            yield return new object[] { new ProductDetails { Name = "TestProduct2", Description = "This is Member Product2", Price = 25, ProductType = "MONITOR" } };
-            yield return new object[] { new ProductDetails { Name = "TestProduct3", Description = "This is Member Product3", Price = 35, ProductType = "EXTERNAL" } };
-            yield return new object[] { new ProductDetails { Name = "TestProduct4", Description = "This is Member Product4", Price = 45, ProductType = "EXTERNAL", UpdatedName = "New TestPorduct4" } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct1", Description = "This is Member Product1", Price = 15, ProductType = ProductTypeEnum.CPU } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct2", Description = "This is Member Product2", Price = 25, ProductType = ProductTypeEnum.MONITOR } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct3", Description = "This is Member Product3", Price = 35, ProductType = ProductTypeEnum.PERIPHARALS } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct4", Description = "This is Member Product4", Price = 45, ProductType = ProductTypeEnum.EXTERNAL, UpdatedName = "New TestPorduct4" } };
         }
-
-       
-
+        
     }
 }

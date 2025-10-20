@@ -9,15 +9,15 @@ namespace EAappProject.Driver
 {
     public class PlaywrightDriver  : IDisposable
     {
-        private IPage _page;
-        private IPlaywright _playwright;
-        private IBrowser _browser;
-        private IBrowserContext _context;
+        private IPage? _page;
+        private IBrowser? _browser;
+        private IBrowserContext? _context;
+        private IPlaywright? _playwright;
         public async Task<IPage> InitializeAsync()
         {
             Console.WriteLine("Starting SetupPlaywright...");
             //Playwright 
-            var playwright = await Playwright.CreateAsync();
+            _playwright = await Playwright.CreateAsync();
 
             //Browser Launch Settings
             var browserSettings = new BrowserTypeLaunchOptions
@@ -27,11 +27,11 @@ namespace EAappProject.Driver
             };
 
             //Browser
-            var browser = await playwright.Chromium.LaunchAsync(browserSettings);
+            _browser = await _playwright.Chromium.LaunchAsync(browserSettings);
 
             //Page
-            var context = await browser.NewContextAsync();
-            _page = await context.NewPageAsync();
+            _context = await _browser.NewContextAsync();
+            _page = await _context.NewPageAsync();
 
             //URL
             await _page.GotoAsync("http://localhost:8000/");
@@ -41,7 +41,7 @@ namespace EAappProject.Driver
 
         public void Dispose()
         {
-            _playwright.Dispose();
+            _playwright?.Dispose();
         }
     }
 }

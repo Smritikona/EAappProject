@@ -18,7 +18,8 @@ namespace EAappProject.Pages
             await txtName.ClearAndFillElementAsync(productDetails.Name);
             await txtDescription.ClearAndFillElementAsync(productDetails.Description);
             await txtPrice.ClearAndFillElementAsync(productDetails.Price.ToString());
-            await txtProductType.SelectDropDownWithIndexAsync(1);
+            //await txtProductType.SelectDropDownWithIndexAsync(1);
+            await txtProductType.SelectDropDownWithTextAsync(productDetails.ProductType.ToString());
             await btnCreate.ClickAsync();
             return new ProductListPage(page);
         }

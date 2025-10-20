@@ -4,7 +4,7 @@ namespace EAappProject.Pages;
 
 public class HomePage(IPage page)
 {
-       ILocator pageTitleTxt => page.GetByRole(AriaRole.Heading, new() { Name = "Welcome" });
+    ILocator pageTitleTxt => page.GetByRole(AriaRole.Heading, new() { Name = "Welcome" });
     ILocator lnkProductList => page.GetByRole(AriaRole.Link, new() { Name = "Product" });
 
     public async Task<HomePage> ValidateTitleAsync()

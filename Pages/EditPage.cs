@@ -18,7 +18,7 @@ public class EditPage(IPage page)
         await txtName.ClearAndFillElementAsync(productDetails.Name);
         await txtDescription.ClearAndFillElementAsync(productDetails.Description);
         await txtPrice.ClearAndFillElementAsync(productDetails.Price.ToString());
-        await txtProductType.ClearAndFillElementAsync(productDetails.ProductType);
+        await txtProductType.ClearAndFillElementAsync(productDetails.ProductType.ToString());
         await btnSave.ClickAsync();
         return new ProductListPage(page);
     }
