@@ -37,12 +37,12 @@ namespace EAappProject.Controls
             await element.SelectOptionAsync(new SelectOptionValue { Label = label });
         }
 
-        public static async Task SelectDropDownWithValueAsync(ILocator element, string value)
+        public static async Task SelectDropDownWithValueAsync(this ILocator element, string value)
         {
             await element.SelectOptionAsync(new SelectOptionValue { Value = value });
         }
 
-        public static async Task SelectListWithMultipleElementsAsync(ILocator element, IEnumerable<string> values)
+        public static async Task SelectListWithMultipleElementsAsync(this ILocator element, IEnumerable<string> values)
         {
             await element.SelectOptionAsync(values);
         }

@@ -67,7 +67,7 @@ namespace EAappProject
             await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType.ToString());
 
             data.Price = 3000;
-            data.ProductType = ProductTypeEnum.PERIPHARALS;
+            data.ProductType = ProductType.PERIPHARALS;
 
             await editProduct.UpdateAsync(data);
             await productList.IsProductExistAsync(data);
@@ -143,7 +143,7 @@ namespace EAappProject
             await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType.ToString());
 
             data.Price = 3000;
-            data.ProductType = ProductTypeEnum.PERIPHARALS;
+            data.ProductType = ProductType.PERIPHARALS;
 
             await editProduct.UpdateAsync(data);
             await productList.IsProductExistAsync(data);

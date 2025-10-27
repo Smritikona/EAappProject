@@ -12,15 +12,14 @@ namespace EAappProject.Model
         public string Name { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
-        public ProductTypeEnum ProductType { get; set; }
+        public ProductType ProductType { get; set; }
         public string UpdatedName { get; set; }
-
-        public enum ProductTypeEnum
-        {
-            CPU,
-            MONITOR,
-            EXTERNAL,
-            PERIPHARALS
-        }
+    }
+    public enum ProductType
+    {
+        CPU,
+        MONITOR,
+        EXTERNAL,
+        PERIPHARALS
     }
 }

@@ -83,7 +83,7 @@ namespace EAappProject
             await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType.ToString());
 
             data.Price = 3000;
-            data.ProductType = ProductTypeEnum.EXTERNAL;
+            data.ProductType = ProductType.EXTERNAL;
 
             await editProduct.UpdateAsync(data);
             await productList.IsProductExistAsync(data);
@@ -159,7 +159,7 @@ namespace EAappProject
             await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType.ToString());
 
             data.Price = 3000;
-            data.ProductType = ProductTypeEnum.EXTERNAL;
+            data.ProductType = ProductType.EXTERNAL;
 
             await editProduct.UpdateAsync(data);
             await productList.IsProductExistAsync(data);

@@ -51,7 +51,7 @@ namespace EAappProject
                 Name = productName,
                 Description = description,
                 Price = price,
-                ProductType = Enum.Parse<ProductTypeEnum>(productType)
+                ProductType = Enum.Parse<ProductType>(productType)
             };
             
             await createProduct.CreateProductAsync(data);
@@ -112,8 +112,8 @@ namespace EAappProject
             var fixture = new Fixture();
             var data = fixture.Create<ProductDetails>();
 
-            var values = Enum.GetValues(typeof(ProductTypeEnum));
-            var randomProductType = (ProductTypeEnum)values.GetValue(_random.Next(values.Length));
+            var values = Enum.GetValues(typeof(ProductType));
+            var randomProductType = (ProductType)values.GetValue(_random.Next(values.Length));
             data.ProductType = randomProductType;
 
             HomePage homePage = new HomePage(_page);
@@ -150,8 +150,8 @@ namespace EAappProject
         [AutoData]
         public async Task CreateDeleteProductWithAutoFixtureAsync(ProductDetails data)
         {
-            var values = Enum.GetValues(typeof(ProductTypeEnum));
-            var randomProductType = (ProductTypeEnum)values.GetValue(_random.Next(values.Length));
+            var values = Enum.GetValues(typeof(ProductType));
+            var randomProductType = (ProductType)values.GetValue(_random.Next(values.Length));
             data.ProductType = randomProductType;
 
             HomePage homePage = new HomePage(_page);
@@ -186,10 +186,10 @@ namespace EAappProject
         }
         public static IEnumerable<object[]> GetProductData()
         {
-            yield return new object[] { new ProductDetails { Name = "TestProduct1", Description = "This is Member Product1", Price = 15, ProductType = ProductTypeEnum.CPU } };
-            yield return new object[] { new ProductDetails { Name = "TestProduct2", Description = "This is Member Product2", Price = 25, ProductType = ProductTypeEnum.MONITOR } };
-            yield return new object[] { new ProductDetails { Name = "TestProduct3", Description = "This is Member Product3", Price = 35, ProductType = ProductTypeEnum.PERIPHARALS } };
-            yield return new object[] { new ProductDetails { Name = "TestProduct4", Description = "This is Member Product4", Price = 45, ProductType = ProductTypeEnum.EXTERNAL, UpdatedName = "New TestPorduct4" } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct1", Description = "This is Member Product1", Price = 15, ProductType = ProductType.CPU } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct2", Description = "This is Member Product2", Price = 25, ProductType = ProductType.MONITOR } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct3", Description = "This is Member Product3", Price = 35, ProductType = ProductType.PERIPHARALS } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct4", Description = "This is Member Product4", Price = 45, ProductType = ProductType.EXTERNAL, UpdatedName = "New TestPorduct4" } };
         }
         
     }
