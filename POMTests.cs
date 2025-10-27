@@ -31,7 +31,6 @@ namespace EAappProject
 
             //URL
             await _page.GotoAsync("http://localhost:8000/");
-
         }
 
 

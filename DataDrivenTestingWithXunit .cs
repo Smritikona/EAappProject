@@ -45,7 +45,7 @@ namespace EAappProject
                 Name = name,
                 Description = description,
                 Price = price,
-                ProductType = productType
+                ProductType = ProductType.CPU
             };
 
             var updateData = new ProductDetails
@@ -53,7 +53,7 @@ namespace EAappProject
                 Name = newProductData,
                 Description = description,
                 Price = price,
-                ProductType = productType
+                ProductType = ProductType.PERIPHARALS
             };
 
             await createProduct.CreateProductAsync(data);
@@ -68,8 +68,6 @@ namespace EAappProject
 
         [Xunit.Theory(Skip = "I dont want to run this test now")]
         [MemberData(nameof(GetProductData))]
-
-
         public async Task CreateDeleteProductUsingMemberDataAsync(ProductDetails data)
         {
             //Output the current test data to the console
@@ -98,9 +96,9 @@ namespace EAappProject
 
         public static IEnumerable<object[]> GetProductData()
         {
-            yield return new object[] { new ProductDetails { Name = "TestProduct1", Description = "This is a test product 1", Price = 30, ProductType = "MONITOR" } };
-            yield return new object[] { new ProductDetails { Name = "TestProduct2", Description = "This is a test product 2", Price = 30, ProductType = "MONITOR" } };
-            yield return new object[] { new ProductDetails { Name = "TestProduct3", Description = "This is a test product 3", Price = 30, ProductType = "MONITOR" } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct1", Description = "This is a test product 1", Price = 30, ProductType = ProductType.CPU } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct2", Description = "This is a test product 2", Price = 30, ProductType = ProductType.PERIPHARALS } };
+            yield return new object[] { new ProductDetails { Name = "TestProduct3", Description = "This is a test product 3", Price = 30, ProductType = ProductType.EXTERNAL } };
         }
 
 
