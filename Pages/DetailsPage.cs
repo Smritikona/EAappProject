@@ -26,7 +26,7 @@ public class DetailsPage(IPage page)
         await Assertions.Expect(txtName).ToHaveTextAsync(productDetails.Name);
         await Assertions.Expect(txtDescription).ToHaveTextAsync(productDetails.Description);
         await Assertions.Expect(txtPrice).ToHaveTextAsync(productDetails.Price.ToString());
-        await Assertions.Expect(txtProductType).ToHaveTextAsync(productDetails.ProductType);
+        await Assertions.Expect(txtProductType).ToHaveTextAsync(productDetails.ProductType.ToString());
 
         return new DetailsPage(page);
     }

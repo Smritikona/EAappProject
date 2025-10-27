@@ -24,12 +24,12 @@ public class ProductListPage(IPage page)
         return new CreateProductPage(page);
     }
 
-    public ILocator GetProductRow(string name, string description, string price, string productType)
+    public ILocator GetProductRow(string name, string description, string price, ProductType productType)
     {
         return page.GetByRole(AriaRole.Row, new() { Name = name })
             .Filter(new() { HasText = description })
             .Filter(new() { HasText = price })
-            .Filter(new() { HasText = productType });
+            .Filter(new() { HasText = productType.ToString() });
     }
 
     public async Task<bool> IsProductExistAsync(ProductDetails productDetails)
@@ -55,7 +55,7 @@ public class ProductListPage(IPage page)
 
     public async Task<DeletePage> DeleteProductAsync(ProductDetails productDetails)
     {
-        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price.ToString(), "CPU");
+        var productRow = GetProductRow(productDetails.Name, productDetails.Description, productDetails.Price.ToString(), ProductType.CPU);
 
         await btnDelete(productRow).ClickAsync();
         return new DeletePage(page);
