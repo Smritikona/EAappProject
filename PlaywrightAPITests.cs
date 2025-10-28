@@ -6,8 +6,13 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Playwright;
 using Newtonsoft.Json;
+using System.Text.Json;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
+using FluentAssertions.Execution;
+using AutoFixture.Xunit2;
+using Newtonsoft.Json.Linq;
 
 namespace EAappProject
 {
@@ -31,7 +36,7 @@ namespace EAappProject
         [Fact]
         public async Task TestGetProductAsync()
         {
-            
+
             // Call the API to get product
             var response = await _apiRequest.GetAsync("/Product/GetProductById/2");
 
@@ -41,7 +46,7 @@ namespace EAappProject
             {
                 PropertyNameCaseInsensitive = true
             });
-            
+
             // // Deserialize the response
             // var product = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
 
@@ -55,122 +60,144 @@ namespace EAappProject
 
             //Better way to deserialize
         }
-        
+
         [Fact]
         public async Task TestGetProductsAsync()
         {
-            
-            // "id": 1,
-            // "name": "Keyboard",
-            // "description": "Gaming Keyboard with lights",
-            // "price": 150,
-            // "productType": 2
-            
+
             // Call the API to get product
             var response = await _apiRequest.GetAsync("/Product/GetProducts");
 
             var jsonResponse = await response.JsonAsync();
-            
+
             // Deserialize the response
             var products = JsonConvert.DeserializeObject<List<ProductDetails>>(jsonResponse.ToString());
+
+            // Validate the response
+            // Xunit.Assert.Equal(product.Name, "Mouse");
+
+
+            //Fluent Assertions
+            //Better way to deserialize
+            using (new AssertionScope())
+            {
+                products.Should().NotBeNull();
+                products.Should().NotBeEmpty();
+                products.Should().HaveCountGreaterThanOrEqualTo(1);
+                products.Should().Contain(p => p.Name == "Mouse" && p.Price == 40);
+                products.Should().OnlyContain(p => p.Price > 100);
+                products.Should().SatisfyRespectively(
+                    first =>
+                    {
+                        first.Name.Should().Be("Keyboard");
+                        first.Price.Should().Be(150);
+                    },
+                    second =>
+                    {
+                        second.Name.Should().Be("Mouse");
+                        second.Price.Should().Be(40);
+                    }
+                );
+            }
+        }
+
+        [Fact]
+        public async Task TestCreateProductAsync()
+        {
+            //body
+            var payload = new ProductDetails
+            {
+                Name = "Mouse12",
+                Description = "Wireless Mouse12",
+                Price = 70,
+                ProductType = ProductType.EXTERNAL
+            };
+            // Call the API to get product
+            var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions { DataObject = payload });
+
+            var jsonResponse = await response.JsonAsync();
+
+            response.Status.Should().Be(200);
+            _testOutputHelper.WriteLine("Response from Create Product API: " + jsonResponse.ToString());
+            response.Ok.Should().BeTrue();
+
+            var responsefromGet = await _apiRequest.GetAsync("/Product/GetProducts");
+            var jsonResponseforGet = await responsefromGet.JsonAsync();
+            var products = jsonResponseforGet?.Deserialize<List<ProductDetails>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             using (new AssertionScope())
             {
-                products.Should().Contain(p => p.Name == "Monitor" && p.Price == 400);
-                
-                
-                
-                // products.Should().SatisfyRespectively(
-                //     first =>
-                //     {
-                //         first.Name.Should().Be("Keyboard");
-                //         first.Price.Should().Be(150);
-                //     },
-                //     second =>
-                //     {
-                //         second.Name.Should().Be("Mouse");
-                //         second.Price.Should().Be(40);
-                //     });
-                //
-                // products.Should().BeEquivalentTo(products);
+                products.Should().Contain(p => p.Name == payload.Name);
+                products.Should().Contain(p => p.Price == payload.Price);
+                products.Should().Contain(p => p.Description == payload.Description);
+            }
+        }
+
+
+        [Xunit.Theory]
+        [AutoData]
+        public async Task TestCreateProductUsingAutoFixtureAsync(ProductDetails payload)
+        {
+            // Call the API to get product
+            var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions { DataObject = payload });
+
+            var jsonResponse = await response.JsonAsync();
+
+            response.Status.Should().Be(200);
+            _testOutputHelper.WriteLine("Response from Create Product API: " + jsonResponse.ToString());
+            response.Ok.Should().BeTrue();
+
+            var responsefromGet = await _apiRequest.GetAsync("/Product/GetProducts");
+            var jsonResponseforGet = await responsefromGet.JsonAsync();
+            var products = jsonResponseforGet?.Deserialize<List<ProductDetails>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            using (new AssertionScope())
+            {
+                products.Should().Contain(p => p.Name == payload.Name);
+                products.Should().Contain(p => p.Price == payload.Price);
+                products.Should().Contain(p => p.Description == payload.Description);
+            }
+        }
+
+        [Xunit.Theory]
+        [AutoData]
+        public async Task TestDeleteProductUsingAutoFixtureAsync(ProductDetails payload)
+        {
+            // Call the API to get product
+            var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions { DataObject = payload });
+
+            var jsonResponse = await response.JsonAsync();
+
+            int? id = null;
+            if (jsonResponse != null && jsonResponse.Value.ValueKind == JsonValueKind.Object)
+            {
+                if (jsonResponse.Value.TryGetProperty("id", out var idElement))
+                {
+                    if (idElement.ValueKind == JsonValueKind.Number)
+                    {
+                        id = idElement.GetInt32();
+                    }
+                    else if (idElement.ValueKind == JsonValueKind.String)
+                    {
+                        string idString = idElement.GetString();
+                        if (int.TryParse(idString, out int parsedId))
+                        {
+                            id = parsedId;
+                        }
+                    }
+                }
             }
 
-            //Better way to deserialize
-        }
-        
-        [Xunit.Theory]
-        [AutoData]
-        public async Task TestPostProductsAsync(ProductDetails productBody)
-        {
-            
-            //Create A PRODUCT using POST
-            //Validate the PRODUCT created - GET operation of the product
-            
-            //Step 1
-            
-            // Call the API to POST product
-            var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
-            {
-                DataObject = productBody,
-            });
-
             response.Status.Should().Be(200);
-            _testOutputHelper.WriteLine(response.StatusText);
+            _testOutputHelper.WriteLine("Response from Create Product API: " + jsonResponse.ToString());
+            _testOutputHelper.WriteLine("Id: " + id);
+            response.Ok.Should().BeTrue();
 
+            var res=await _apiRequest.DeleteAsync($"/Product/Delete/?id={id}");
+            var responsefromGet = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
 
-            //Step 2
-            var responseFromGet = await _apiRequest.GetAsync("/Product/GetProducts");
-
-            var jsonResponse = await responseFromGet.JsonAsync();
-            
-            // Deserialize the response
-            var products = JsonConvert.DeserializeObject<List<ProductDetails>>(jsonResponse.ToString());
-            
-            // products.Should().Contain(p => p.Name == productBody.Name 
-            //                                && p.Price == productBody.Price 
-            //                                && p.Description == productBody.Description);
-
-            //products.Should().Contain(productBody);
-
-
+             responsefromGet.Status.Should().Be(204);
+            _testOutputHelper.WriteLine("Response from Get Product API after Delete: " + responsefromGet.StatusText.ToString());
         }
-        
-        [Xunit.Theory]
-        [AutoData]
-        public async Task TestDeleteProductsAsync(ProductDetails productBody)
-        {
-            
-            //Create A PRODUCT using POST
-            //Delete the Product created
-            //Validate the PRODUCT if its deleted
-            
-            //Step 1
-            // Call the API to POST product
-            var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
-            {
-                DataObject = productBody,
-            });
-
-            response.Status.Should().Be(200);
-            _testOutputHelper.WriteLine(response.StatusText);
-            
-            var id = response.id //ToDo ???
-
-            //Step 2
-            await _apiRequest.DeleteAsync($"/Product/Delete?id={id}");
-            
-            
-            //Step 2
-            var responseFromGet = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
-
-            var jsonResponse = await responseFromGet.JsonAsync();
-            
-            // Deserialize the response
-            var products = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
-
-            products.Name.Should().BeNullOrEmpty();
-
-        }
-
     }
 }

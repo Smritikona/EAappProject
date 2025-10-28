@@ -13,7 +13,7 @@ namespace EAappProject.Driver
 
             var apiRequestContext = new APIRequestNewContextOptions
             {
-                BaseURL = "http://localhost:8001/",
+                BaseURL = "https://localhost:44334/",
                 ExtraHTTPHeaders = headers,
                 IgnoreHTTPSErrors = true
             };
