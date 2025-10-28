@@ -13,7 +13,10 @@ namespace EAappProject.Model
         public string Description { get; set; }
         public int Price { get; set; }
         public ProductType ProductType { get; set; }
-        public string UpdatedName { get; set; }
+        public string? UpdatedName { get; set; }
+        public int Id { get; set; }
+
+
     }
     public enum ProductType
     {
