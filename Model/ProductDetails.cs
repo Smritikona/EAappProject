@@ -14,7 +14,6 @@ namespace EAappProject.Model
         public int Price { get; set; }
         public ProductType ProductType { get; set; }
         public string? UpdatedName { get; set; }
-        public int Id { get; set; }
 
 
     }

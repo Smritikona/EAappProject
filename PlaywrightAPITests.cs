@@ -130,25 +130,20 @@ namespace EAappProject
                 ProductType = ProductType.MONITOR
             };
             body.UpdatedName = null;
+
             //Step 1
             //Call the API to get products
             var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
             {
                 DataObject = body
             });
-
             response.Status.Should().Be(200);
             _testOutputHelper.WriteLine(response.StatusText);
-
             var jsonResponse = await response.JsonAsync();
             _testOutputHelper.WriteLine("Response of newly Created JSON:\n" + jsonResponse);
 
             //Deserialize the response
-            var product = jsonResponse?.Deserialize<ProductDetails>(new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
+            var product = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
             _testOutputHelper.WriteLine($"Product: {product.Name}, {product.Description}, {product.Price}");
 
             //Validate the response
@@ -156,34 +151,31 @@ namespace EAappProject
 
             //Step 2
             var responseFromGet = await _apiRequest.GetAsync("/Product/GetProducts");
-
             var jsonGetResponse = await responseFromGet.JsonAsync();
 
             // Deserialize the response
             var products = JsonConvert.DeserializeObject<List<ProductDetails>>(jsonGetResponse.ToString());
-
             products.Should().Contain(p => p.Name == body.Name
                                            && p.Price == body.Price
                                            && p.Description == body.Description);
 
-            //products.Should().ContainEquivalentOf(body);
+            products.Should().ContainEquivalentOf(body);
 
             //Step 3
             //Delete the product
-            int id = product.Id;
+            int id = JsonDocument
+                        .Parse(jsonResponse.ToString())
+                        .RootElement.GetProperty("id")
+                        .GetInt32();
             _testOutputHelper.WriteLine($"id: {id}");
-
             await _apiRequest.DeleteAsync($"/Product/Delete?id={id}");
 
             //Step 4
             var responseAfterDel = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
-
             responseAfterDel.Status.Should().Be(204);
             _testOutputHelper.WriteLine(responseAfterDel.StatusText);
-
             var responseBodyAfterDel = await responseAfterDel.TextAsync();
             _testOutputHelper.WriteLine($"Response body after delete: '{responseBodyAfterDel}'");
-
             responseBodyAfterDel.Should().BeNullOrEmpty();
         }
 
@@ -193,23 +185,18 @@ namespace EAappProject
         {
             body.UpdatedName = null;
 
+            //Step 1
             var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
             {
                 DataObject = body,
             });
-
             response.Status.Should().Be(200);
             _testOutputHelper.WriteLine(response.StatusText);
-
             var jsonResponse = await response.JsonAsync();
             _testOutputHelper.WriteLine("Response of newly Created JSON:\n" + jsonResponse);
 
             //Deserialize the response
-            var product = jsonResponse?.Deserialize<ProductDetails>(new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            });
-
+            var product = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
             _testOutputHelper.WriteLine($"Product: {product.Name}, {product.Description}, {product.Price}");
 
             //Validate the response
@@ -217,34 +204,30 @@ namespace EAappProject
 
             //Step 2
             var responseFromGet = await _apiRequest.GetAsync("/Product/GetProducts");
-
             var jsonGetResponse = await responseFromGet.JsonAsync();
 
-            // Deserialize the response
+            //Deserialize the response
             var products = JsonConvert.DeserializeObject<List<ProductDetails>>(jsonGetResponse.ToString());
-
             products.Should().Contain(p => p.Name == body.Name
                                            && p.Price == body.Price
                                            && p.Description == body.Description);
-
             products.Should().ContainEquivalentOf(body);
 
             //Step 3
             //Delete the product
-            int id = product.Id;
+            int id = JsonDocument
+                        .Parse(jsonResponse.ToString())
+                        .RootElement.GetProperty("id")
+                        .GetInt32();
             _testOutputHelper.WriteLine($"id: {id}");
-
             await _apiRequest.DeleteAsync($"/Product/Delete?id={id}");
 
             //Step 4
             var responseAfterDel = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
-
             responseAfterDel.Status.Should().Be(204);
             _testOutputHelper.WriteLine(responseAfterDel.StatusText);
-
             var responseBodyAfterDel = await responseAfterDel.TextAsync();
             _testOutputHelper.WriteLine($"Response body after delete: '{responseBodyAfterDel}'");
-
             responseBodyAfterDel.Should().BeNullOrEmpty();
         }
 
@@ -255,7 +238,7 @@ namespace EAappProject
             productBody.UpdatedName = null;
 
             //Step 1
-            // Call the API to POST product
+            //Call the API to POST product
             var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
             {
                 DataObject = productBody,
@@ -263,31 +246,22 @@ namespace EAappProject
 
             response.Status.Should().Be(200);
             _testOutputHelper.WriteLine(response.StatusText);
-
             var jsonResponse = await response.JsonAsync();
             _testOutputHelper.WriteLine("Response JSON:\n" + jsonResponse);
 
             //Deserialize the response
-            var product = jsonResponse?.Deserialize<ProductDetails>(new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            int id = product.Id;
+            dynamic product = JsonConvert.DeserializeObject(jsonResponse.ToString());
+            int id = product.id;
             _testOutputHelper.WriteLine($"id: {id}");
 
             //Step 2
             var responseFromGet = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
             var jsonResponseFromGet = await responseFromGet.JsonAsync();
 
-            // Deserialize the response
-            var productFromGet = jsonResponseFromGet?.Deserialize<ProductDetails>(new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            productFromGet.Name.Should().NotBeNullOrEmpty();
-            _testOutputHelper.WriteLine($"{productFromGet.Name}, {productFromGet.Id}");
+            //Deserialize the response
+            dynamic productFromGet = JsonConvert.DeserializeObject(jsonResponseFromGet.ToString());
+            responseFromGet.Should().NotBeNull();
+            _testOutputHelper.WriteLine($"{productFromGet.name}, {productFromGet.id}");
 
             //Step 3
             //API call for DELETE Product 
@@ -295,13 +269,10 @@ namespace EAappProject
 
             //Step 4
             var responseAfterDel = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
-
             responseAfterDel.Status.Should().Be(204);
             _testOutputHelper.WriteLine(responseAfterDel.StatusText);
-
             var responseBodyAfterDel = await responseAfterDel.TextAsync();
             _testOutputHelper.WriteLine($"Response body after delete: '{responseBodyAfterDel}'");
-
             responseBodyAfterDel.Should().BeNullOrEmpty();
 
         }

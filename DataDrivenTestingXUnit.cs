@@ -13,18 +13,31 @@ namespace EAappProject
 {
     public class DataDrivenTestingXUnit : IClassFixture<PlaywrightDriver>
     {
-
-        private IPage _page;
+        private readonly IHomePage _homePage;
+        private readonly IProductListPage _productListPage;
+        private readonly ICreateProductPage _createProductPage;
+        private readonly IDeletePage _deletePage;
+        private readonly IEditPage _editPage;
+        private readonly IDetailsPage _detailsPage;
         private readonly ITestOutputHelper _testOutputHelper;
-        private readonly PlaywrightDriver _playwrightDriver;
-        private readonly Random _random = new Random();
+        private readonly Random _random = new();
 
-
-        public DataDrivenTestingXUnit(ITestOutputHelper testOutputHelper, PlaywrightDriver playwrightDriver)
+        public DataDrivenTestingXUnit(
+            IHomePage homePage,
+            IProductListPage productListPage,
+            IDetailsPage detailsPage,
+            ICreateProductPage createProductPage,
+            IDeletePage deletePage,
+            IEditPage editPage,
+            ITestOutputHelper testOutputHelper)
         {
+            _homePage = homePage;
+            _productListPage = productListPage;
+            _createProductPage = createProductPage;
+            _deletePage = deletePage;
+            _editPage = editPage;
+            _detailsPage = detailsPage;
             _testOutputHelper = testOutputHelper;
-            _playwrightDriver = playwrightDriver;
-            _page = _playwrightDriver.InitializeAsync().GetAwaiter().GetResult();
         }
 
         [Xunit.Theory]
@@ -36,15 +49,13 @@ namespace EAappProject
         {
             //Output to console before test
             _testOutputHelper.WriteLine($"Before test Product: {productName}, Description: {description}, Price: {price}, ProductType: {productType}");
-            
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.pageTitleTxt.IsVisibleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.pageTitleTxt.IsVisibleAsync();
 
             var data = new ProductDetails
             {
@@ -53,19 +64,18 @@ namespace EAappProject
                 Price = price,
                 ProductType = Enum.Parse<ProductType>(productType)
             };
-            
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
 
-            var editProduct = await productList.EditProductAsync(data);
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
+            await _productListPage.EditProductAsync(data);
 
             data.Name = newProductName ?? productName;
-            await editProduct.UpdateAsync(data);
+            await _editPage.UpdateAsync(data);
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
 
             //Output to console after test
             _testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
@@ -79,31 +89,26 @@ namespace EAappProject
             //Output to console before test
             _testOutputHelper.WriteLine($"Before test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
-
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.pageTitleTxt.IsVisibleAsync();
-
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
-
-            var editProduct = await productList.EditProductAsync(data);
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.pageTitleTxt.IsVisibleAsync();
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
+            await _productListPage.EditProductAsync(data);
 
             data.Name = data.UpdatedName ?? data.Name;
-            await editProduct.UpdateAsync(data);
+            await _editPage.UpdateAsync(data);
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
 
             //Output to console after test
             _testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
-
         }
 
         [Xunit.Fact]
@@ -116,34 +121,30 @@ namespace EAappProject
             var randomProductType = (ProductType)values.GetValue(_random.Next(values.Length));
             data.ProductType = randomProductType;
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
-
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.pageTitleTxt.IsVisibleAsync();
-            
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.pageTitleTxt.IsVisibleAsync();
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
             //Output to console before test
             _testOutputHelper.WriteLine($"Before test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
 
-            var editProduct = await productList.EditProductAsync(data);
+            await _productListPage.EditProductAsync(data);
 
             data.Name = data.UpdatedName ?? data.Name;
-            await editProduct.UpdateAsync(data);
+            await _editPage.UpdateAsync(data);
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
 
             //Output to console after edit
             _testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
-
         }
 
         [Xunit.Theory]
@@ -154,35 +155,31 @@ namespace EAappProject
             var randomProductType = (ProductType)values.GetValue(_random.Next(values.Length));
             data.ProductType = randomProductType;
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
-
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.pageTitleTxt.IsVisibleAsync();
-
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.pageTitleTxt.IsVisibleAsync();
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
             //Output to console before edit
             _testOutputHelper.WriteLine($"Before test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
 
-            var editProduct = await productList.EditProductAsync(data);
+            await _productListPage.EditProductAsync(data);
 
             data.Name = data.UpdatedName ?? data.Name;
-            data.Price += 10; 
-            await editProduct.UpdateAsync(data);
+            data.Price += 10;
+            await _editPage.UpdateAsync(data);
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
 
             //Output to console after edit
             _testOutputHelper.WriteLine($"After test Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
-
         }
         public static IEnumerable<object[]> GetProductData()
         {
@@ -191,6 +188,6 @@ namespace EAappProject
             yield return new object[] { new ProductDetails { Name = "TestProduct3", Description = "This is Member Product3", Price = 35, ProductType = ProductType.PERIPHARALS } };
             yield return new object[] { new ProductDetails { Name = "TestProduct4", Description = "This is Member Product4", Price = 45, ProductType = ProductType.EXTERNAL, UpdatedName = "New TestPorduct4" } };
         }
-        
+
     }
 }

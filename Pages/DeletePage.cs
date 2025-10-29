@@ -1,21 +1,21 @@
-﻿using Microsoft.Playwright;
+﻿using EAappProject.Driver;
+using Microsoft.Playwright;
 
 namespace EAappProject.Pages;
 
-public class DeletePage(IPage page)
+public interface IDeletePage
 {
-    ILocator pageTitleTxt => page.Locator("h1", new() { HasText = "Delete" });
-    ILocator btnDelete => page.GetByRole(AriaRole.Button, new() { Name = "Delete" });
+    Task DeleteAsync();
+    Task ValidateTitleAsync();
+}
 
-    public async Task<DeletePage> ValidateTitleAsync()
-    {
-        await Assertions.Expect(pageTitleTxt).ToBeVisibleAsync();
-        return new DeletePage(page);
-    }
+public class DeletePage(IPlaywrightDriver playwrightDriver) : IDeletePage
+{
+    private IPage _page = playwrightDriver.InitializeAsync().Result;
+    ILocator pageTitleTxt => _page.Locator("h1", new() { HasText = "Delete" });
+    ILocator btnDelete => _page.GetByRole(AriaRole.Button, new() { Name = "Delete" });
 
-    public async Task<ProductListPage> DeleteAsync()
-    {
-        await btnDelete.ClickAsync();
-        return new ProductListPage(page);
-    }
+    public async Task ValidateTitleAsync() => await Assertions.Expect(pageTitleTxt).ToBeVisibleAsync();
+
+    public async Task DeleteAsync() => await btnDelete.ClickAsync();
 }

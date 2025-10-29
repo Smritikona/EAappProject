@@ -4,19 +4,38 @@ using EAappProject.Pages;
 using EAappProject.Utilities;
 using Microsoft.Playwright;
 using Xunit;
+using Xunit.Abstractions;
 using static EAappProject.Model.ProductDetails;
 
 namespace EAappProject
 {
     public class POMTestsWithXunit : IClassFixture<PlaywrightDriver>
     {
-        private IPage _page;
-        private readonly PlaywrightDriver _playwrightDriver;
+        private readonly IHomePage _homePage;
+        private readonly IProductListPage _productListPage;
+        private readonly ICreateProductPage _createProductPage;
+        private readonly IDeletePage _deletePage;
+        private readonly IEditPage _editPage;
+        private readonly IDetailsPage _detailsPage;
+        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly Random _random = new();
 
-        public POMTestsWithXunit(PlaywrightDriver playwrightDriver)
+        public POMTestsWithXunit(
+            IHomePage homePage,
+            IProductListPage productListPage,
+            IDetailsPage detailsPage,
+            ICreateProductPage createProductPage,
+            IDeletePage deletePage,
+            IEditPage editPage,
+            ITestOutputHelper testOutputHelper)
         {
-            _playwrightDriver = playwrightDriver;
-            _page = _playwrightDriver.InitializeAsync().GetAwaiter().GetResult();
+            _homePage = homePage;
+            _productListPage = productListPage;
+            _createProductPage = createProductPage;
+            _deletePage = deletePage;
+            _editPage = editPage;
+            _detailsPage = detailsPage;
+            _testOutputHelper = testOutputHelper;
         }
 
         [Fact]
@@ -24,21 +43,23 @@ namespace EAappProject
         {
             var data = JsonHelper.ReadJsonFile();
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.pageTitleTxt.IsVisibleAsync();
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.pageTitleTxt.IsVisibleAsync();
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
+            _testOutputHelper.WriteLine($"Created Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
+
+            _testOutputHelper.WriteLine($"Completed Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
         }
 
         [Fact]
@@ -46,36 +67,36 @@ namespace EAappProject
         {
             var data = JsonHelper.ReadJsonFile();
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.pageTitleTxt.IsVisibleAsync();
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.pageTitleTxt.IsVisibleAsync();
-
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
+            _testOutputHelper.WriteLine($"Created Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
 
             //Edit product
-            var editProduct = await productList.EditProductAsync(data);
-            await Assertions.Expect(editProduct.pageTitleTxt).ToBeVisibleAsync();
-            await Assertions.Expect(editProduct.txtName).ToHaveValueAsync(data.Name);
-            await Assertions.Expect(editProduct.txtDescription).ToHaveValueAsync(data.Description);
-            await Assertions.Expect(editProduct.txtPrice).ToHaveValueAsync(data.Price.ToString());
-            await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType.ToString());
+            await _productListPage.EditProductAsync(data);
+            await Assertions.Expect(_editPage.pageTitleTxt).ToBeVisibleAsync();
+            await Assertions.Expect(_editPage.txtName).ToHaveValueAsync(data.Name);
+            await Assertions.Expect(_editPage.txtDescription).ToHaveValueAsync(data.Description);
+            await Assertions.Expect(_editPage.txtPrice).ToHaveValueAsync(data.Price.ToString());
+            await Assertions.Expect(_editPage.txtProductType).ToHaveValueAsync(data.ProductType.ToString());
 
             data.Price = 3000;
             data.ProductType = ProductType.PERIPHARALS;
+            await _editPage.UpdateAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
-            await editProduct.UpdateAsync(data);
-            await productList.IsProductExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            _testOutputHelper.WriteLine($"Completed Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
         }
 
         [Fact]
@@ -83,32 +104,33 @@ namespace EAappProject
         {
             var data = JsonHelper.ReadJsonFile();
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.pageTitleTxt.IsVisibleAsync();
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.pageTitleTxt.IsVisibleAsync();
-
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
+            _testOutputHelper.WriteLine($"Created Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
 
             //Details product
-            var detailsProduct = await productList.DetailsProductAsync(data);
-            await Assertions.Expect(detailsProduct.pageTitleTxt).ToBeVisibleAsync();
-            await Assertions.Expect(detailsProduct.txtName).ToHaveTextAsync(data.Name);
-            await Assertions.Expect(detailsProduct.txtPrice).ToHaveTextAsync(data.Price.ToString());
-            await Assertions.Expect(detailsProduct.txtDescription).ToHaveTextAsync(data.Description);
-            await Assertions.Expect(detailsProduct.txtProductType).ToHaveTextAsync(data.ProductType.ToString());
+            await _productListPage.DetailsProductAsync(data);
+            await Assertions.Expect(_detailsPage.pageTitleTxt).ToBeVisibleAsync();
+            await Assertions.Expect(_detailsPage.txtName).ToHaveTextAsync(data.Name);
+            await Assertions.Expect(_detailsPage.txtPrice).ToHaveTextAsync(data.Price.ToString());
+            await Assertions.Expect(_detailsPage.txtDescription).ToHaveTextAsync(data.Description);
+            await Assertions.Expect(_detailsPage.txtProductType).ToHaveTextAsync(data.ProductType.ToString());
 
-            await detailsProduct.BackToListAsync();
+            await _detailsPage.BackToListAsync();
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
+
+            _testOutputHelper.WriteLine($"Completed Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
         }
 
         [Fact]
@@ -116,42 +138,43 @@ namespace EAappProject
         {
             var data = JsonHelper.ReadJsonFile();
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.pageTitleTxt.IsVisibleAsync();
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.pageTitleTxt.IsVisibleAsync();
+            _testOutputHelper.WriteLine($"Created Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
 
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
+            //Details product
+            await _productListPage.DetailsProductAsync(data);
+            await Assertions.Expect(_detailsPage.pageTitleTxt).ToBeVisibleAsync();
+            await Assertions.Expect(_detailsPage.txtName).ToHaveTextAsync(data.Name);
+            await Assertions.Expect(_detailsPage.txtPrice).ToHaveTextAsync(data.Price.ToString());
+            await Assertions.Expect(_detailsPage.txtDescription).ToHaveTextAsync(data.Description);
+            await Assertions.Expect(_detailsPage.txtProductType).ToHaveTextAsync(data.ProductType.ToString());
 
-            var detailsProduct = await productList.DetailsProductAsync(data);
-            await Assertions.Expect(detailsProduct.pageTitleTxt).ToBeVisibleAsync();
-            await Assertions.Expect(detailsProduct.txtName).ToHaveTextAsync(data.Name);
-            await Assertions.Expect(detailsProduct.txtPrice).ToHaveTextAsync(data.Price.ToString());
-            await Assertions.Expect(detailsProduct.txtDescription).ToHaveTextAsync(data.Description);
-            await Assertions.Expect(detailsProduct.txtProductType).ToHaveTextAsync(data.ProductType.ToString());
-
-            var editProduct = await detailsProduct.GoToEditPageAsync();
-            await Assertions.Expect(editProduct.pageTitleTxt).ToBeVisibleAsync();
-            await Assertions.Expect(editProduct.txtName).ToHaveValueAsync(data.Name);
-            await Assertions.Expect(editProduct.txtDescription).ToHaveValueAsync(data.Description);
-            await Assertions.Expect(editProduct.txtPrice).ToHaveValueAsync(data.Price.ToString());
-            await Assertions.Expect(editProduct.txtProductType).ToHaveValueAsync(data.ProductType.ToString());
+            await _detailsPage.GoToEditPageAsync();
+            await Assertions.Expect(_editPage.pageTitleTxt).ToBeVisibleAsync();
+            await Assertions.Expect(_editPage.txtName).ToHaveValueAsync(data.Name);
+            await Assertions.Expect(_editPage.txtDescription).ToHaveValueAsync(data.Description);
+            await Assertions.Expect(_editPage.txtPrice).ToHaveValueAsync(data.Price.ToString());
+            await Assertions.Expect(_editPage.txtProductType).ToHaveValueAsync(data.ProductType.ToString());
 
             data.Price = 3000;
             data.ProductType = ProductType.PERIPHARALS;
+            await _editPage.UpdateAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
-            await editProduct.UpdateAsync(data);
-            await productList.IsProductExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            _testOutputHelper.WriteLine($"Completed Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
         }
     }
 }
