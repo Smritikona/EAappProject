@@ -135,42 +135,42 @@ namespace EAappProject
 
         }
         
-        [Xunit.Theory]
-        [AutoData]
-        public async Task TestDeleteProductsAsync(ProductDetails productBody)
-        {
-            
-            //Create A PRODUCT using POST
-            //Delete the Product created
-            //Validate the PRODUCT if its deleted
-            
-            //Step 1
-            // Call the API to POST product
-            var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
-            {
-                DataObject = productBody,
-            });
-
-            response.Status.Should().Be(200);
-            _testOutputHelper.WriteLine(response.StatusText);
-            
-            var id = response.id //ToDo ???
-
-            //Step 2
-            await _apiRequest.DeleteAsync($"/Product/Delete?id={id}");
-            
-            
-            //Step 2
-            var responseFromGet = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
-
-            var jsonResponse = await responseFromGet.JsonAsync();
-            
-            // Deserialize the response
-            var products = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
-
-            products.Name.Should().BeNullOrEmpty();
-
-        }
+        // [Xunit.Theory]
+        // [AutoData]
+        // public async Task TestDeleteProductsAsync(ProductDetails productBody)
+        // {
+        //     
+        //     //Create A PRODUCT using POST
+        //     //Delete the Product created
+        //     //Validate the PRODUCT if its deleted
+        //     
+        //     //Step 1
+        //     // Call the API to POST product
+        //     var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
+        //     {
+        //         DataObject = productBody,
+        //     });
+        //
+        //     response.Status.Should().Be(200);
+        //     _testOutputHelper.WriteLine(response.StatusText);
+        //     
+        //     var id = response.id //ToDo ???
+        //
+        //     //Step 2
+        //     await _apiRequest.DeleteAsync($"/Product/Delete?id={id}");
+        //     
+        //     
+        //     //Step 2
+        //     var responseFromGet = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
+        //
+        //     var jsonResponse = await responseFromGet.JsonAsync();
+        //     
+        //     // Deserialize the response
+        //     var products = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
+        //
+        //     products.Name.Should().BeNullOrEmpty();
+        //
+        // }
 
     }
 }
