@@ -1,21 +1,22 @@
-﻿using Microsoft.Playwright;
+﻿using EAappProject.Driver;
+using Microsoft.Playwright;
 
 namespace EAappProject.Pages;
 
-public class HomePage(IPage page)
+public interface IHomePage
 {
-       ILocator pageTitleTxt => page.GetByRole(AriaRole.Heading, new() { Name = "Welcome" });
-    ILocator lnkProductList => page.GetByRole(AriaRole.Link, new() { Name = "Product" });
+    Task ValidateTitleAsync();
+    Task ClickProductListAsync();
+}
 
-    public async Task<HomePage> ValidateTitleAsync()
-    {
-        await Assertions.Expect(pageTitleTxt).ToBeVisibleAsync();
-        return new HomePage(page);
-    }
+public class HomePage(IPlaywrightDriver playwrightDriver) : IHomePage
+{
+    private IPage _page = playwrightDriver.InitializePlaywright().Result;
+    
+    ILocator pageTitleTxt => _page.GetByRole(AriaRole.Heading, new() { Name = "Welcome" });
+    ILocator lnkProductList => _page.GetByRole(AriaRole.Link, new() { Name = "Product" });
 
-    public async Task<ProductListPage> ClickProductListAsync()
-    {
-        await lnkProductList.ClickAsync();
-        return new ProductListPage(page);
-    }
+    public async Task ValidateTitleAsync() => await Assertions.Expect(pageTitleTxt).ToBeVisibleAsync();
+
+    public async Task ClickProductListAsync() => await lnkProductList.ClickAsync();
 }

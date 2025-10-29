@@ -2,7 +2,12 @@
 
 namespace EAappProject.Driver
 {
-    public class PlaywrightDriver :  IDisposable
+    public interface IPlaywrightDriver
+    {
+        Task<IPage> InitializePlaywright();
+    }
+
+    public class PlaywrightDriver :  IDisposable, IPlaywrightDriver
     {
 
         private IPage _page;
