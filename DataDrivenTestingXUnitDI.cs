@@ -1,6 +1,6 @@
 using AutoFixture.Xunit2;
+using EAappProject.Base;
 using EAappProject.Model;
-using EAappProject.Pages;
 using Xunit.Abstractions;
 
 namespace EAappProject

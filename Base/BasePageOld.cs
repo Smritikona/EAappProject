@@ -2,7 +2,7 @@
 
 namespace EAappProject.Base
 {
-    public interface IBasePageSetup
+    public interface IBasePageOld
     {
         IHomePage HomePage { get; }
         IProductListPage ProductListPage { get; }
@@ -12,7 +12,7 @@ namespace EAappProject.Base
         IEditPage EditPage { get; }
     }
 
-    public class BasePageSetup : IBasePageSetup
+    public class BasePageOld : IBasePageOld
     {
         public IHomePage HomePage { get; }
         public IProductListPage ProductListPage { get; }
@@ -21,7 +21,7 @@ namespace EAappProject.Base
         public IDeletePage DeletePage { get; }
         public IDetailsPage DetailsPage { get; }
 
-        public BasePageSetup(
+        public BasePageOld(
             IHomePage homePage,
             IProductListPage productListPage,
             ICreateProductPage createProductPage,

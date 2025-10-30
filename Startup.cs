@@ -1,7 +1,5 @@
 ﻿using EAappProject.Base;
 using EAappProject.Driver;
-using EAappProject.Pages;
-using EAappProject.Pages.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 
