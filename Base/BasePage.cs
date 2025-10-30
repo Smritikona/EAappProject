@@ -1,7 +1,7 @@
-using EAappProject.Pages.Interfaces;
+using EAappProject.Pages;
 using Microsoft.Playwright;
 
-namespace EAappProject.Pages;
+namespace EAappProject.Base;
 
 public interface IBasePage
 {

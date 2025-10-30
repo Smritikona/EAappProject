@@ -7,7 +7,13 @@ using System.Threading.Tasks;
 
 namespace EAappProject.Driver
 {
-    public class PlaywrightAPIDriver  : IDisposable
+    public interface IPlaywrightAPIDriver
+    {
+        void Dispose();
+        Task<IAPIRequestContext> InitializeAsync(Dictionary<string, string> headers);
+    }
+
+    public class PlaywrightAPIDriver : IDisposable, IPlaywrightAPIDriver
     {
         private IPlaywright? _playwright;
         public async Task<IAPIRequestContext> InitializeAsync(Dictionary<string, string> headers)

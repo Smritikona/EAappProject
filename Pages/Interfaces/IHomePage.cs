@@ -1,7 +1,7 @@
-namespace EAappProject.Pages.Interfaces;
+//namespace EAappProject.Pages.Interfaces;
 
-public interface IHomePage
-{
-    Task ValidateTitleAsync();
-    Task ClickProductListAsync();
-}
+//public interface IHomePage
+//{
+//    Task ValidateTitleAsync();
+//    Task ClickProductListAsync();
+//}

@@ -6,54 +6,39 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Playwright;
 using Newtonsoft.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace EAappProject
 {
-    public class PlaywrightAPITests : IClassFixture<PlaywrightAPIDriver>
+    public class PlaywrightAPITests
     {
 
         private readonly ITestOutputHelper _testOutputHelper;
-        private readonly PlaywrightAPIDriver _playwrightAPIDriver;
         private IAPIRequestContext _apiRequest;
 
-
-        public PlaywrightAPITests(ITestOutputHelper testOutputHelper, PlaywrightAPIDriver playwrightAPIDriver)
+        public PlaywrightAPITests(ITestOutputHelper testOutputHelper, IAPIRequestContext apiRequest)
         {
             _testOutputHelper = testOutputHelper;
-            _playwrightAPIDriver = playwrightAPIDriver;
-            var headers = new Dictionary<string, string>
-                {
-                    { "Accept", "application/json" },
-                    { "Content-Type", "application/json" }
-                };
-            _apiRequest = _playwrightAPIDriver.InitializeAsync(headers).GetAwaiter().GetResult();
+            _apiRequest = apiRequest;
         }
 
 
         [Fact]
         public async Task TestGetProductAsync()
         {
-            //Call the API to get products
-            
-            // Call the API to get product
+            //Call the API to get product
             var response = await _apiRequest.GetAsync("/Product/GetProductById/2");
-
             var jsonResponse = await response.JsonAsync();
             _testOutputHelper.WriteLine("Response JSON:\n" + jsonResponse);
 
-
             //Deserialize the response
             //var product = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
-
             var product = jsonResponse?.Deserialize<ProductDetails>(new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
-            
+
             _testOutputHelper.WriteLine($"Product: {product.Name}, {product.Description}, {product.Price}");
 
             //Validate the response
@@ -66,22 +51,18 @@ namespace EAappProject
                 product.ProductType.Should().Be(ProductType.EXTERNAL);
                 product.UpdatedName.Should().BeNullOrEmpty();
             }
-
-            //Better way to deserialize
         }
-        
+
         [Fact]
         public async Task TestGetProductsAsync()
         {
-            //Call the API to get products
-            
-            // Call the API to get product
+            //Call the API to get product
             var response = await _apiRequest.GetAsync("/Product/GetProducts");
 
             var jsonResponse = await response.JsonAsync();
             _testOutputHelper.WriteLine("Response JSON:\n" + jsonResponse);
 
-            
+
             //Deserialize the response
             var products = JsonConvert.DeserializeObject<List<ProductDetails>>(jsonResponse.ToString());
             foreach (var product in products)
@@ -93,7 +74,7 @@ namespace EAappProject
             using (new AssertionScope())
             {
                 products.Should().Contain(p => p.Name == "Monitor" && p.Price == 400);
-                
+
                 products.Should().SatisfyRespectively(
                     first =>
                     {
@@ -115,12 +96,12 @@ namespace EAappProject
                         fourth.Name.Should().Be("Cabinet");
                         fourth.Price.Should().Be(65);
                     });
-                
+
                 products.Should().BeEquivalentTo(products);
             }
-                
 
-            }
+
+        }
 
         [Fact]
         public async Task TestPostProductAsync()
@@ -182,13 +163,13 @@ namespace EAappProject
             _testOutputHelper.WriteLine($"Response body after delete: '{responseBodyAfterDel}'");
             responseBodyAfterDel.Should().BeNullOrEmpty();
         }
-        
+
         [Xunit.Theory]
         [AutoData]
         public async Task TestPostProductWithAutoFixtureAsync(ProductDetails body)
         {
             body.UpdatedName = null;
-            
+
             //Step 1
             var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
             {
@@ -198,7 +179,7 @@ namespace EAappProject
             _testOutputHelper.WriteLine(response.StatusText);
             var jsonResponse = await response.JsonAsync();
             _testOutputHelper.WriteLine("Response of newly Created JSON:\n" + jsonResponse);
-            
+
             //Deserialize the response
             var product = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
             _testOutputHelper.WriteLine($"Product: {product.Name}, {product.Description}, {product.Price}");
@@ -261,7 +242,7 @@ namespace EAappProject
             //Step 2
             var responseFromGet = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
             var jsonResponseFromGet = await responseFromGet.JsonAsync();
-            
+
             //Deserialize the response
             dynamic productFromGet = JsonConvert.DeserializeObject(jsonResponseFromGet.ToString());
             responseFromGet.Should().NotBeNull();
@@ -280,43 +261,5 @@ namespace EAappProject
             responseBodyAfterDel.Should().BeNullOrEmpty();
 
         }
-        
-        // [Xunit.Theory]
-        // [AutoData]
-        // public async Task TestDeleteProductsAsync(ProductDetails productBody)
-        // {
-        //     
-        //     //Create A PRODUCT using POST
-        //     //Delete the Product created
-        //     //Validate the PRODUCT if its deleted
-        //     
-        //     //Step 1
-        //     // Call the API to POST product
-        //     var response = await _apiRequest.PostAsync("/Product/Create", new APIRequestContextOptions
-        //     {
-        //         DataObject = productBody,
-        //     });
-        //
-        //     response.Status.Should().Be(200);
-        //     _testOutputHelper.WriteLine(response.StatusText);
-        //     
-        //     var id = response.id //ToDo ???
-        //
-        //     //Step 2
-        //     await _apiRequest.DeleteAsync($"/Product/Delete?id={id}");
-        //     
-        //     
-        //     //Step 2
-        //     var responseFromGet = await _apiRequest.GetAsync($"/Product/GetProductById/{id}");
-        //
-        //     var jsonResponse = await responseFromGet.JsonAsync();
-        //     
-        //     // Deserialize the response
-        //     var products = JsonConvert.DeserializeObject<ProductDetails>(jsonResponse.ToString());
-        //
-        //     products.Name.Should().BeNullOrEmpty();
-        //
-        // }
-
     }
 }
