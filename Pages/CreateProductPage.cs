@@ -16,10 +16,10 @@ namespace EAappProject.Pages
         Task CreateProductAsync(ProductDetails productDetails);
     }
 
-    public class CreateProductPage(IPlaywrightDriver playwrightDriver) : ICreateProductPage
+    public class CreateProductPage(IPage page) : ICreateProductPage
 
     {
-        private IPage _page = playwrightDriver.InitializeAsync().Result;
+        private IPage _page = page;
         public ILocator pageTitleTxt => _page.GetByRole(AriaRole.Heading, new() { Name = "Create" });
         public ILocator txtName => _page.GetByRole(AriaRole.Textbox, new() { Name = "Name" });
         public ILocator txtDescription => _page.GetByRole(AriaRole.Textbox, new() { Name = "Description" });

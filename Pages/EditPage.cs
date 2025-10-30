@@ -1,5 +1,4 @@
 ﻿using EAappProject.Controls;
-using EAappProject.Driver;
 using EAappProject.Model;
 using Microsoft.Playwright;
 
@@ -16,9 +15,9 @@ public interface IEditPage
     Task UpdateAsync(ProductDetails productDetails);
 }
 
-public class EditPage(IPlaywrightDriver playwrightDriver) : IEditPage
+public class EditPage(IPage page) : IEditPage
 {
-    private IPage _page = playwrightDriver.InitializeAsync().Result;
+    private IPage _page = page;
     public ILocator pageTitleTxt => _page.Locator("h1", new() { HasText = "Edit" });
     public ILocator txtName => _page.GetByRole(AriaRole.Textbox, new() { Name = "Name" });
     public ILocator txtDescription => _page.GetByRole(AriaRole.Textbox, new() { Name = "Description" });

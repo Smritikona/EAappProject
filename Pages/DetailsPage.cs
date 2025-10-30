@@ -1,6 +1,4 @@
-﻿using EAappProject.Driver;
-using EAappProject.Model;
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 
 namespace EAappProject.Pages;
 
@@ -17,9 +15,9 @@ public interface IDetailsPage
     Task GoToEditPageAsync();
 }
 
-public class DetailsPage(IPlaywrightDriver playwrightDriver) : IDetailsPage
+public class DetailsPage(IPage page) : IDetailsPage
 {
-    private IPage _page = playwrightDriver.InitializeAsync().Result;
+    private IPage _page = page;
     public ILocator pageTitleTxt => _page.Locator("h1", new() { HasText = "Details" });
     public ILocator txtName => _page.Locator("#Name");
     public ILocator txtDescription => _page.Locator("#Description");

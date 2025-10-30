@@ -10,9 +10,11 @@ public interface IHomePage
     Task ValidateTitleAsync();
 }
 
-public class HomePage(IPlaywrightDriver playwrightDriver) : IHomePage
+//public class HomePage(IPlaywrightDriver playwrightDriver) : IHomePage
+public class HomePage(IPage page) : IHomePage
 {
-    private IPage _page = playwrightDriver.InitializeAsync().Result;
+    //private IPage _page = playwrightDriver.InitializeAsync().Result;
+    private IPage _page = page;
     ILocator pageTitleTxt => _page.GetByRole(AriaRole.Heading, new() { Name = "Welcome" });
     ILocator lnkProductList => _page.GetByRole(AriaRole.Link, new() { Name = "Product" });
     

@@ -1,5 +1,4 @@
-﻿using EAappProject.Driver;
-using EAappProject.Model;
+﻿using EAappProject.Model;
 using Microsoft.Playwright;
 
 namespace EAappProject.Pages;
@@ -19,9 +18,11 @@ public interface IProductListPage
     Task ValidateTitleAsync();
 }
 
-public class ProductListPage(IPlaywrightDriver playwrightDriver) : IProductListPage
+//public class ProductListPage(IPlaywrightDriver playwrightDriver) : IProductListPage
+public class ProductListPage(IPage page) : IProductListPage
+
 {
-    private IPage _page = playwrightDriver.InitializeAsync().Result;
+    private IPage _page = page;
     ILocator pageTitleTxt => _page.GetByRole(AriaRole.Heading, new() { Name = "List" });
     ILocator btnCreate => _page.GetByRole(AriaRole.Link, new() { Name = "Create" });
     public ILocator btnDelete(ILocator parentRow) => parentRow.GetByRole(AriaRole.Link, new() { Name = "Delete" });

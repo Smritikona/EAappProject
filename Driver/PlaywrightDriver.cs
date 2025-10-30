@@ -1,9 +1,4 @@
 ﻿using Microsoft.Playwright;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EAappProject.Driver
 {
@@ -21,8 +16,8 @@ namespace EAappProject.Driver
         private IPlaywright? _playwright;
         public async Task<IPage> InitializeAsync()
         {
-            if (_page == null)
-            {
+            //if (_page == null)
+            //{
                 Console.WriteLine("Starting SetupPlaywright...");
                 //Playwright 
                 _playwright = await Playwright.CreateAsync();
@@ -36,10 +31,11 @@ namespace EAappProject.Driver
 
                 //Browser
                 _browser = await _playwright.Chromium.LaunchAsync(browserSettings);
-            //Page
-            _context = await _browser.NewContextAsync();
-            _page = await _context.NewPageAsync();
-            }
+
+                //Page
+                _context = await _browser.NewContextAsync();
+                _page = await _context.NewPageAsync();
+            //}
 
             //URL
             await _page.GotoAsync("http://localhost:8000/");
