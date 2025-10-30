@@ -4,8 +4,8 @@ namespace EAappProject.Driver
 {
     public interface IPlaywrightDriver
     {
-        Task<IPage> InitializeAsync();
         void Dispose();
+        Task<IPage> InitializeAsync();
     }
 
     public class PlaywrightDriver : IDisposable, IPlaywrightDriver
@@ -14,6 +14,7 @@ namespace EAappProject.Driver
         private IBrowser? _browser;
         private IBrowserContext? _context;
         private IPlaywright? _playwright;
+
         public async Task<IPage> InitializeAsync()
         {
             Console.WriteLine("Starting SetupPlaywright...");
@@ -39,7 +40,6 @@ namespace EAappProject.Driver
             Console.WriteLine("SetupPlaywright completed.");
             return _page;
         }
-
 
         public void Dispose()
         {
