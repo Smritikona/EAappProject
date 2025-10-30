@@ -1,27 +1,30 @@
 ﻿using AutoFixture;
 using AutoFixture.Xunit2;
-using EAappProject.Driver;
 using EAappProject.Model;
 using EAappProject.Pages;
-using EAappProject.Utilities;
 using Microsoft.Playwright;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace EAappProject
 {
-    public class DataDrivenTestingWithXunit : IClassFixture<PlaywrightDriver>
+    public class DataDrivenTestingWithXunit
     {
-
-        private readonly ITestOutputHelper _testOutputHelper;
-        private readonly PlaywrightDriver _playwrightDriver;
+        private IHomePage _homePage;
+        private IProductListPage _productListPage;
+        private ICreateProductPage _createProductPage;
+        private IDeletePage _deletePage;
+        private IEditPage _editPage;
+        private IDetailsPage _detailsPage;
         private IPage _page;
 
-        public DataDrivenTestingWithXunit(ITestOutputHelper testOutputHelper, PlaywrightDriver playwrightDriver)
+        public DataDrivenTestingWithXunit(IHomePage homePage, IProductListPage productListPage, ICreateProductPage createProductPage, IDetailsPage detailsPage, IEditPage editPage, IDeletePage deletePage)
         {
-            _testOutputHelper = testOutputHelper;
-            _playwrightDriver = playwrightDriver;
-            _page = _playwrightDriver.InitializePlaywright().GetAwaiter().GetResult();
+            _homePage = homePage;
+            _productListPage = productListPage;
+            _createProductPage = createProductPage;
+            _deletePage = deletePage;
+            _detailsPage = detailsPage;
+            _editPage = editPage;
         }
 
         [Xunit.Theory]
@@ -31,14 +34,13 @@ namespace EAappProject
         [InlineData("TestProduct3", "This is a test product 3", 30, "MONITOR", "NewTestProduct")]
         public async Task CreateDeleteProductAsync(string name, string description, int price, string productType, string? newProductData = null)
         {
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.ValidateTitleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.ValidateTitleAsync();
 
             var data = new ProductDetails
             {
@@ -56,13 +58,13 @@ namespace EAappProject
                 ProductType = ProductType.PERIPHARALS
             };
 
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
 
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
         }
 
 
@@ -70,28 +72,23 @@ namespace EAappProject
         [MemberData(nameof(GetProductData))]
         public async Task CreateDeleteProductUsingMemberDataAsync(ProductDetails data)
         {
-            //Output the current test data to the console
-            _testOutputHelper.WriteLine($"Running the test for Product: {data.Name}, Description: {data.Description}, Price: {data.Price}, ProductType: {data.ProductType}");
+            await _homePage.ValidateTitleAsync();
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.ValidateTitleAsync();
 
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.ValidateTitleAsync();
-
-            await createProduct.CreateProductAsync(data);
-            await productList.IsProductExistAsync(data);
-
-            var deleteProduct = await productList.DeleteProductAsync(data);
-            await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
-            await productList.ValidateProductNotExistAsync(data);
+            await _createProductPage.CreateProductAsync(data);
+            await _productListPage.IsProductExistAsync(data);
+            await _productListPage.DeleteProductAsync(data);
+            await _deletePage.ValidateTitleAsync();
+            await _deletePage.DeleteAsync();
+            await _productListPage.ValidateProductNotExistAsync(data);
         }
 
-       
+
 
 
         public static IEnumerable<object[]> GetProductData()
@@ -110,21 +107,18 @@ namespace EAappProject
             var fixture = new Fixture();
             var data = fixture.Create<ProductDetails>();
 
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.ValidateTitleAsync();
 
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.ValidateTitleAsync();
-
-            await createProduct.CreateProductAsync(data);
+            await _createProductPage.CreateProductAsync(data);
             //await productList.IsProductExistAsync(data);
-
-            var deleteProduct = await productList.DeleteProductAsync(data);
+            await _productListPage.DeleteProductAsync(data);
             //await deleteProduct.ValidateTitleAsync();
-            await deleteProduct.DeleteAsync();
+            await _deletePage.DeleteAsync();
             //await productList.ValidateProductNotExistAsync(data);
         }
 
@@ -133,16 +127,13 @@ namespace EAappProject
         [AutoData]
         public async Task CreateDeleteProductWithAutoFixtureAsync(ProductDetails data)
         {
-            HomePage homePage = new HomePage(_page);
-            await homePage.ValidateTitleAsync();
+            await _homePage.ValidateTitleAsync();
+            await _homePage.ClickProductListAsync();
+            await _productListPage.ValidateTitleAsync();
+            await _productListPage.CreateProductAsync();
+            await _createProductPage.ValidateTitleAsync();
 
-            var productList = await homePage.ClickProductListAsync();
-            await productList.ValidateTitleAsync();
-
-            var createProduct = await productList.CreateProductAsync();
-            await createProduct.ValidateTitleAsync();
-
-            await createProduct.CreateProductAsync(data);
+            await _createProductPage.CreateProductAsync(data);
         }
 
     }

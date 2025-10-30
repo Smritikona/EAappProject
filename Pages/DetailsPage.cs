@@ -1,45 +1,54 @@
-﻿using EAappProject.Model;
+﻿using EAappProject.Driver;
+using EAappProject.Model;
 using Microsoft.Playwright;
 
 namespace EAappProject.Pages;
 
-public class DetailsPage(IPage page)
+public interface IDetailsPage
 {
-    ILocator pageTitleTxt => page.Locator("h1", new() { HasText = "Details" });
-    ILocator txtName => page.Locator("#Name");
-    ILocator txtDescription => page.Locator("#Description");
-    ILocator txtPrice => page.Locator("#Price");
-    ILocator txtProductType => page.Locator("#ProductType");
-    ILocator btnBackToList => page.GetByRole(AriaRole.Link, new() { Name = "Back to List" });
-    ILocator btnEdit => page.GetByRole(AriaRole.Link, new() { Name = "Edit" });
+    Task BackToListAsync();
+    Task GoToEditPageAsync();
+    Task ValidateProductDetailsPage(ProductDetails productDetails);
+    Task ValidateTitleAsync();
+}
+
+public class DetailsPage : IDetailsPage
+{
+    private IPage _page;
+    public DetailsPage(IPage page)
+    {
+        _page = page;
+    }
+    ILocator pageTitleTxt => _page.Locator("h1", new() { HasText = "Details" });
+    ILocator txtName => _page.Locator("#Name");
+    ILocator txtDescription => _page.Locator("#Description");
+    ILocator txtPrice => _page.Locator("#Price");
+    ILocator txtProductType => _page.Locator("#ProductType");
+    ILocator btnBackToList => _page.GetByRole(AriaRole.Link, new() { Name = "Back to List" });
+    ILocator btnEdit => _page.GetByRole(AriaRole.Link, new() { Name = "Edit" });
 
 
 
-    public async Task<DetailsPage> ValidateTitleAsync()
+    public async Task ValidateTitleAsync()
     {
         await Assertions.Expect(pageTitleTxt).ToBeVisibleAsync();
-        return new DetailsPage(page);
     }
 
-    public async Task<DetailsPage> ValidateProductDetailsPage(ProductDetails productDetails)
+    public async Task ValidateProductDetailsPage(ProductDetails productDetails)
     {
         await Assertions.Expect(txtName).ToHaveTextAsync(productDetails.Name);
         await Assertions.Expect(txtDescription).ToHaveTextAsync(productDetails.Description);
         await Assertions.Expect(txtPrice).ToHaveTextAsync(productDetails.Price.ToString());
         await Assertions.Expect(txtProductType).ToHaveTextAsync(productDetails.ProductType.ToString());
-
-        return new DetailsPage(page);
     }
 
-    public async Task<EditPage> GoToEditPageAsync()
+    public async Task GoToEditPageAsync()
     {
         await btnEdit.ClickAsync();
-        return new EditPage(page);
     }
 
-    public async Task<ProductListPage> BackToListAsync()
+    public async Task BackToListAsync()
     {
         await btnBackToList.ClickAsync();
-        return new ProductListPage(page);
     }
 }
