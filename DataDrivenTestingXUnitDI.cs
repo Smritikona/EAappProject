@@ -1,5 +1,4 @@
 using AutoFixture.Xunit2;
-using EAappProject.Base;
 using EAappProject.Model;
 using EAappProject.Pages;
 using Xunit.Abstractions;
@@ -8,13 +7,13 @@ namespace EAappProject
 {
     public class DataDrivenTestingWithXunitWithDI
     {
-        private readonly IHomePage _homePage;
-        private readonly IProductListPage _productListPage;
-        private readonly ICreateProductPage _createProductPage;
-        private readonly IDeletePage _deletePage;
-        private readonly IEditPage _editPage;
-        private readonly IDetailsPage _detailsPage;
-        //private readonly IBasePage _basePage;
+        //private readonly IHomePage _homePage;
+        //private readonly IProductListPage _productListPage;
+        //private readonly ICreateProductPage _createProductPage;
+        //private readonly IDeletePage _deletePage;
+        //private readonly IEditPage _editPage;
+        //private readonly IDetailsPage _detailsPage;
+        private readonly IBasePage _basePage;
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly Random _random = new();
 
@@ -36,9 +35,9 @@ namespace EAappProject
             //_editPage = editPage;
             //_detailsPage = detailsPage;
             _testOutputHelper = testOutputHelper;
-            //_basePage = basePage;
+            _basePage = basePage;
         }
-        
+
         [Xunit.Theory]
         [AutoData]
         public async Task CreateEditDeleteProductAsync(ProductDetails data)
@@ -55,22 +54,22 @@ namespace EAappProject
             // Create product
             await _basePage.ProductListPage.CreateProductAsync();
             await _basePage.CreateProductPage.pageTitleTxt.IsVisibleAsync();
-            //await _createProductPage.CreateProductAsync(data);
-            //await _productListPage.IsProductExistAsync(data);
+            await _basePage.CreateProductPage.CreateProductAsync(data);
+            await _basePage.ProductListPage.IsProductExistAsync(data);
 
-            //_testOutputHelper.WriteLine($"Created Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
+            _testOutputHelper.WriteLine($"Created Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
 
-            //// Edit product
-            //await _productListPage.EditProductAsync(data);
-            //data.Name = data.UpdatedName ?? data.Name;
-            //data.Price += 10;
-            //await _editPage.UpdateAsync(data);
+            // Edit product
+            await _basePage.ProductListPage.EditProductAsync(data);
+            data.Name = data.UpdatedName ?? data.Name;
+            data.Price += 10;
+            await _basePage.EditPage.UpdateAsync(data);
 
-            //// Delete product
-            //await _productListPage.DeleteProductAsync(data);
-            //await _deletePage.ValidateTitleAsync();
-            //await _deletePage.DeleteAsync();
-            //await _productListPage.ValidateProductNotExistAsync(data);
+            // Delete product
+            await _basePage.ProductListPage.DeleteProductAsync(data);
+            await _basePage.DeletePage.ValidateTitleAsync();
+            await _basePage.DeletePage.DeleteAsync();
+            await _basePage.ProductListPage.ValidateProductNotExistAsync(data);
 
             _testOutputHelper.WriteLine($"Completed Product: {data.Name}, {data.Description}, {data.Price}, {data.ProductType}");
         }

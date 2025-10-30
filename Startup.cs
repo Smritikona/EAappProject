@@ -7,24 +7,24 @@ using Microsoft.Playwright;
 
 namespace EAappProject
 {
-public class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
+    public class Startup
     {
-        services.AddSingleton<IPlaywrightDriver, PlaywrightDriver>();
-        //Initialize the Playwright Driver and return the IPage for you.
-        services.AddSingleton<IPage>(p =>
+        public void ConfigureServices(IServiceCollection services)
         {
-            var driver = p.GetRequiredService<IPlaywrightDriver>();
+            services.AddSingleton<IPlaywrightDriver, PlaywrightDriver>();
+            //Initialize the Playwright Driver and return the IPage for you.
+            services.AddSingleton<IPage>(p =>
+            {
+                var driver = p.GetRequiredService<IPlaywrightDriver>();
                 return driver.InitializeAsync().Result;
-        });
-        services.AddTransient<IBasePage, BasePage>();
-            services.AddTransient<IHomePage, HomePage>();
-            services.AddTransient<IProductListPage, ProductListPage>();
-            services.AddTransient<ICreateProductPage, CreateProductPage>();
-            services.AddTransient<IEditPage, EditPage>();
-            services.AddTransient<IDeletePage, DeletePage>();
-            services.AddTransient<IDetailsPage, DetailsPage>();
+            });
+            services.AddTransient<IBasePage, BasePage>();
+            //services.AddTransient<IHomePage, HomePage>();
+            //services.AddTransient<IProductListPage, ProductListPage>();
+            //services.AddTransient<ICreateProductPage, CreateProductPage>();
+            //services.AddTransient<IEditPage, EditPage>();
+            //services.AddTransient<IDeletePage, DeletePage>();
+            //services.AddTransient<IDetailsPage, DetailsPage>();
         }
     }
 }

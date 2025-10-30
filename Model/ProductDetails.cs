@@ -14,8 +14,6 @@ namespace EAappProject.Model
         public int Price { get; set; }
         public ProductType ProductType { get; set; }
         public string? UpdatedName { get; set; }
-
-
     }
     public enum ProductType
     {
@@ -23,14 +21,5 @@ namespace EAappProject.Model
         MONITOR,
         EXTERNAL,
         PERIPHARALS
-    }
-
-
-    public enum ProductType
-    {
-        CPU,
-        MONITOR,
-        PERIPHARALS,
-        EXTERNAL
     }
 }
