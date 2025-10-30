@@ -1,33 +1,33 @@
 ﻿using Microsoft.Playwright;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace EAappProject.Driver
 {
-    public class PlaywrightApiDriver :  IDisposable
+    public class PlaywrightAPIDriver  : IDisposable
     {
-        private IPlaywright _playwright;
-
-        public async Task<IAPIRequestContext> InitializePlaywright(Dictionary<string, string> headers)
+        private IPlaywright? _playwright;
+        public async Task<IAPIRequestContext> InitializeAsync(Dictionary<string, string> headers)
         {
+            Console.WriteLine("Starting SetupPlaywright...");
             //Playwright 
             _playwright = await Playwright.CreateAsync();
 
-            var apiRequestContext = new APIRequestNewContextOptions
+            var apiRequestOptions = new APIRequestNewContextOptions
             {
-                BaseURL = "http://localhost:8001/",
+                BaseURL = "https://localhost:44334/",
                 ExtraHTTPHeaders = headers,
                 IgnoreHTTPSErrors = true
             };
-
-            return await _playwright.APIRequest.NewContextAsync(apiRequestContext);
+            return await _playwright.APIRequest.NewContextAsync(apiRequestOptions);
         }
 
-
         public void Dispose()
-        { 
-            //await _page.CloseAsync();
-            //await _context.CloseAsync();
-            //await _browser.CloseAsync();
-            _playwright.Dispose();
+        {
+            _playwright?.Dispose();
         }
     }
 }

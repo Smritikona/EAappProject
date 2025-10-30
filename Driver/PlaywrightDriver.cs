@@ -16,9 +16,7 @@ namespace EAappProject.Driver
         private IPlaywright? _playwright;
         public async Task<IPage> InitializeAsync()
         {
-            //if (_page == null)
-            //{
-                Console.WriteLine("Starting SetupPlaywright...");
+            Console.WriteLine("Starting SetupPlaywright...");
             //Playwright 
             _playwright = await Playwright.CreateAsync();
 
@@ -35,7 +33,6 @@ namespace EAappProject.Driver
             //Page
             _context = await _browser.NewContextAsync();
             _page = await _context.NewPageAsync();
-            //}
 
             //URL
             await _page.GotoAsync("http://localhost:8000/");
@@ -45,7 +42,7 @@ namespace EAappProject.Driver
 
 
         public void Dispose()
-        { 
+        {
             _browser?.CloseAsync().GetAwaiter().GetResult();
             _playwright?.Dispose();
         }

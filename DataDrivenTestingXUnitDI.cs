@@ -2,21 +2,19 @@ using AutoFixture.Xunit2;
 using EAappProject.Base;
 using EAappProject.Model;
 using EAappProject.Pages;
-using Microsoft.Playwright;
-using System;
 using Xunit.Abstractions;
 
 namespace EAappProject
 {
     public class DataDrivenTestingWithXunitWithDI
     {
-        //private readonly IHomePage _homePage;
-        //private readonly IProductListPage _productListPage;
-        //private readonly ICreateProductPage _createProductPage;
-        //private readonly IDeletePage _deletePage;
-        //private readonly IEditPage _editPage;
-        //private readonly IDetailsPage _detailsPage;
-        private readonly IBasePage _basePage;
+        private readonly IHomePage _homePage;
+        private readonly IProductListPage _productListPage;
+        private readonly ICreateProductPage _createProductPage;
+        private readonly IDeletePage _deletePage;
+        private readonly IEditPage _editPage;
+        private readonly IDetailsPage _detailsPage;
+        //private readonly IBasePage _basePage;
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly Random _random = new();
 
@@ -28,7 +26,8 @@ namespace EAappProject
             //IDeletePage deletePage,
             //IEditPage editPage,
             ITestOutputHelper testOutputHelper,
-            IBasePage basePage)
+            IBasePage basePage
+            )
         {
             //_homePage = homePage;
             //_productListPage = productListPage;
@@ -37,7 +36,7 @@ namespace EAappProject
             //_editPage = editPage;
             //_detailsPage = detailsPage;
             _testOutputHelper = testOutputHelper;
-            _basePage = basePage;
+            //_basePage = basePage;
         }
         
         [Xunit.Theory]
