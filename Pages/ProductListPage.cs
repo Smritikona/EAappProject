@@ -3,7 +3,7 @@ using Microsoft.Playwright;
 
 namespace EAappProject.Pages;
 
-public interface IProductListPage
+public class ProductListPage(IPage page)
 {
     ILocator btnDelete(ILocator parentRow);
     ILocator btnDetails(ILocator parentRow);

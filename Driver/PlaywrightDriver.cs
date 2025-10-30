@@ -19,22 +19,22 @@ namespace EAappProject.Driver
             //if (_page == null)
             //{
                 Console.WriteLine("Starting SetupPlaywright...");
-                //Playwright 
-                _playwright = await Playwright.CreateAsync();
+            //Playwright 
+            _playwright = await Playwright.CreateAsync();
 
-                //Browser Launch Settings
-                var browserSettings = new BrowserTypeLaunchOptions
-                {
-                    Headless = false,
-                    //SlowMo = 1000
-                };
+            //Browser Launch Settings
+            var browserSettings = new BrowserTypeLaunchOptions
+            {
+                Headless = false,
+                //SlowMo = 1000
+            };
 
-                //Browser
-                _browser = await _playwright.Chromium.LaunchAsync(browserSettings);
+            //Browser
+            _browser = await _playwright.Chromium.LaunchAsync(browserSettings);
 
-                //Page
-                _context = await _browser.NewContextAsync();
-                _page = await _context.NewPageAsync();
+            //Page
+            _context = await _browser.NewContextAsync();
+            _page = await _context.NewPageAsync();
             //}
 
             //URL
@@ -43,8 +43,9 @@ namespace EAappProject.Driver
             return _page;
         }
 
+
         public void Dispose()
-        {
+        { 
             _browser?.CloseAsync().GetAwaiter().GetResult();
             _playwright?.Dispose();
         }

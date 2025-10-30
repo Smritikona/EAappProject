@@ -24,4 +24,13 @@ namespace EAappProject.Model
         EXTERNAL,
         PERIPHARALS
     }
+
+
+    public enum ProductType
+    {
+        CPU,
+        MONITOR,
+        PERIPHARALS,
+        EXTERNAL
+    }
 }
