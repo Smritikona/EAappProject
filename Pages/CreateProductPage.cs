@@ -22,7 +22,7 @@ namespace EAappProject.Pages
         ILocator txtName => _page.GetByRole(AriaRole.Textbox, new() { Name = "Name" });
         ILocator txtDescription => _page.GetByRole(AriaRole.Textbox, new() { Name = "Description" });
         ILocator txtPrice => _page.Locator("#Price");
-        ILocator txtProductType => _page.GetByLabel("ProductType");
+        ILocator txtProductType => _page.GetByRole(AriaRole.Combobox,new() { Name = "ProductType" });
         ILocator btnCreate => _page.GetByRole(AriaRole.Button, new() { Name = "Create" });
 
         public async Task ValidateTitleAsync()
@@ -34,7 +34,7 @@ namespace EAappProject.Pages
             await txtName.ClearAndFillElementAsync(productDetails.Name);
             await txtDescription.ClearAndFillElementAsync(productDetails.Description);
             await txtPrice.ClearAndFillElementAsync(productDetails.Price.ToString());
-            await txtProductType.SelectDropDownWithValueAsync(productDetails.ProductType.ToString());
+            await txtProductType.SelectDropDownWithTextAsync(productDetails.ProductType.ToString());
             await btnCreate.ClickAsync();
         }
     }
