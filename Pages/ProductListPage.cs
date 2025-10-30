@@ -22,18 +22,11 @@ public interface IProductListPage
     // Task<DetailsPage> DetailsProductAsync(ProductDetails productDetails);
 }
 
-public class ProductListPage : IProductListPage
+public class ProductListPage(IPage page) : IProductListPage
 {
-
-    private IPage _page;
-
-    public ProductListPage(IPlaywrightDriver playwrightDriver)
-    {
-        _page = playwrightDriver.InitializePlaywright().Result;
-    }
     
-    ILocator pageTitleTxt => _page.GetByRole(AriaRole.Heading, new() { Name = "List" });
-    ILocator btnCreate => _page.GetByRole(AriaRole.Link, new() { Name = "Create" });
+    ILocator pageTitleTxt => page.GetByRole(AriaRole.Heading, new() { Name = "List" });
+    ILocator btnCreate => page.GetByRole(AriaRole.Link, new() { Name = "Create" });
     public ILocator btnDelete(ILocator parentRow) => parentRow.GetByRole(AriaRole.Link, new() { Name = "Delete" });
     public ILocator btnEdit(ILocator parentRow) => parentRow.GetByRole(AriaRole.Link, new() { Name = "Edit" });
     public ILocator btnDetails(ILocator parentRow) => parentRow.GetByRole(AriaRole.Link, new() { Name = "Details" });
@@ -44,7 +37,7 @@ public class ProductListPage : IProductListPage
 
     public ILocator GetProductRow(string name, string description, string price, ProductType productType)
     {
-        return _page.GetByRole(AriaRole.Row, new() { Name = name })
+        return page.GetByRole(AriaRole.Row, new() { Name = name })
             .Filter(new() { HasText = description })
             .Filter(new() { HasText = price })
             .Filter(new() { HasText = productType.ToString() });

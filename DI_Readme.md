@@ -2,6 +2,7 @@
 
 # Patterns to follow for DI
 
+### 0. Install the XUnit.DI package
 ### 1. Create Startup file
 ### 2. Add the method ConfigureServices
 ### 3. Make your existing Concrete class with an Interfaces

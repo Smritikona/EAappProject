@@ -1,5 +1,6 @@
 using EAappProject.Driver;
 using EAappProject.Pages;
+using EAappProject.Pages.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 
@@ -9,11 +10,13 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        //If you call IHomePage anywhere in the code moving forward, you are going to essentially call 
-        //the concrete class HomePage
         services.AddSingleton<IPlaywrightDriver, PlaywrightDriver>();
-        services.AddTransient<IHomePage, HomePage>();
-        services.AddTransient<IProductListPage, ProductListPage>();
-        
+        //Initialize the Playwright Driver and return the IPage for you.
+        services.AddSingleton<IPage>(p =>
+        {
+            var driver = p.GetRequiredService<IPlaywrightDriver>();
+            return driver.InitializePlaywright().Result;
+        });
+        services.AddTransient<IBasePage, BasePage>();
     }
 }
