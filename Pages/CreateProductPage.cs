@@ -1,5 +1,4 @@
 ﻿using EAappProject.Controls;
-using EAappProject.Driver;
 using EAappProject.Model;
 using Microsoft.Playwright;
 
@@ -30,7 +29,7 @@ namespace EAappProject.Pages
             await txtName.ClearAndFillElementAsync(productDetails.Name);
             await txtDescription.ClearAndFillElementAsync(productDetails.Description);
             await txtPrice.ClearAndFillElementAsync(productDetails.Price.ToString());
-            await txtProductType.SelectDropDownWithValueAsync(productDetails.ProductType.ToString());
+            await txtProductType.SelectDropDownWithTextAsync(productDetails.ProductType.ToString());
             await btnCreate.ClickAsync();
         }
     }
