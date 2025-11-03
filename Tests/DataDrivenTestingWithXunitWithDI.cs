@@ -1,15 +1,9 @@
-﻿using AutoFixture;
-using AutoFixture.Xunit2;
-using EAappProject.Driver;
+﻿using AutoFixture.Xunit2;
 using EAappProject.Model;
 using EAappProject.Pages;
-using EAappProject.Pages.Interfaces;
-using EAappProject.Utilities;
 using Microsoft.Playwright;
-using Xunit;
-using Xunit.Abstractions;
 
-namespace EAappProject
+namespace EAappProject.Tests
 {
     public class DataDrivenTestingWithXunitWithDI
     {

@@ -1,5 +1,4 @@
-﻿using EAappProject.Driver;
-using EAappProject.Pages.Interfaces;
+﻿using EAappProject.Pages.Interfaces;
 using Microsoft.Playwright;
 
 namespace EAappProject.Pages;

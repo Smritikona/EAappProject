@@ -1,5 +1,4 @@
-﻿using EAappProject.Driver;
-using EAappProject.Model;
+﻿using EAappProject.Model;
 using Microsoft.Playwright;
 
 namespace EAappProject.Pages;

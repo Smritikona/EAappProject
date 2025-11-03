@@ -15,8 +15,6 @@
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="FluentAssertions" Version="8.8.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="Microsoft.Playwright" Version="1.55.0" />
-	  <PackageReference Include="Microsoft.Playwright.NUnit" Version="1.27.1" />
 	  <PackageReference Include="xunit" Version="2.9.3" />
 	  <PackageReference Include="Xunit.DependencyInjection" Version="9.9.1" />
 	  <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
@@ -26,8 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Microsoft.Playwright.NUnit" />
-    <Using Include="NUnit.Framework" />
     <Using Include="System.Text.RegularExpressions" />
     <Using Include="System.Threading.Tasks" />
   </ItemGroup>
@@ -42,6 +38,10 @@
     <Compile Update="Utilitis\JsonHelper.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EAFramework\EAFramework.csproj" />
   </ItemGroup>
 
 </Project>
