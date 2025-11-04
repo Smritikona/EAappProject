@@ -3,6 +3,7 @@ using EAappProject.Model;
 using EAappProject.Pages;
 using EAFramework.Utilities;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Playwright;
 
 namespace EAappProject.Tests;
@@ -42,7 +43,9 @@ public class DatabaseTesting
                 .Excluding(y => y.NewPrice)
                 .Excluding(y => y.ProductType));
 
-        //result.Should().BeEquivalentTo(data);
+        var product = productDbContext.Products.FirstOrDefault(x => x.Name == data.Name);
+        productDbContext.Remove(product);
+        productDbContext.SaveChanges();
     }
     
     
